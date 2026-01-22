@@ -1,0 +1,37 @@
+contact_path = "contact"
+imprint_path = "imprint"
+privacy_path = "privacy"
+
+[header]
+home = "Home"
+contact = "Contact"
+german = "Deutsch"
+english = "English"
+
+[home]
+title = "Welcome to Andre Herling"
+heading = "Welcome to my website!"
+
+
+[contact]
+title = "Contact"
+email = "Email:"
+english_version = "English Version"
+button_label = "Contact me"
+
+
+[privacy]
+title = "Privacy"
+heading = "Privacy Statement"
+
+[imprint]
+title = "Imprint"
+heading = "Imprint Statement"
+
+[not_found]
+heading = "Page not found."
+
+[footer]
+copyright = "© 2026 Andre Herling | "
+imprint = "Impressum"
+privacy = "Privacy Policy"

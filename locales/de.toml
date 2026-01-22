@@ -1,0 +1,36 @@
+contact_path = "kontakt"
+imprint_path = "impressum"
+privacy_path = "datenschutzerklaerung"
+
+[header]
+home = "Startseite"
+contact = "Kontakt"
+german = "Deutsch"
+english = "Englisch"
+
+
+[home]
+title = "Willkommen bei Andre Herling"
+heading = "Willkommen auf meiner Webseite!"
+
+[contact]
+title = "Kontakt"
+email = "E-Mail:"
+english_version = "Englische Version"
+button_label = "Kontakt aufnehmen"
+
+[privacy]
+title = "Datenschutz"
+heading = "Die Datenschutzerklärung"
+
+[imprint]
+title = "Impressum"
+heading = "Das Impressum"
+
+[not_found]
+heading = "Seite nicht gefunden."
+
+[footer]
+copyright = "© 2026 Andre Herling | "
+imprint = "Impressum"
+privacy = "Datenschutzerklärung"
