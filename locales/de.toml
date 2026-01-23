@@ -10,7 +10,7 @@ english = "Englisch"
 
 
 [home]
-title = "Willkommen bei Andre Herling"
+title = "Willkommen"
 heading = "Willkommen auf meiner Webseite!"
 
 [contact]
@@ -31,6 +31,6 @@ heading = "Das Impressum"
 heading = "Seite nicht gefunden."
 
 [footer]
-copyright = "© 2026 Andre Herling | "
+copyright = "© 2026 Beispiel | "
 imprint = "Impressum"
 privacy = "Datenschutzerklärung"

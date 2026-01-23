@@ -21,7 +21,8 @@ wasm-bindgen = { version = "0.2.106", optional = true }
 leptos_i18n = "0.6"
 leptos_i18n_router = "0.6"
 thiserror =  { version = "2", optional = true }  # for axum-login
-
+http = {version = "1.4", optional = true }
+tower-cookies = {version = "0.11", optional = true }
 [build-dependencies]
 leptos_i18n_build = "0.6"
 
@@ -43,6 +44,8 @@ ssr = [
     "dep:tower-sessions", # for axum-login
     "dep:serde", # for axum-login
     "dep:thiserror", # for axum-login
+    "dep:http", # for axum-login
+    "dep:tower-cookies", # for axum-login
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",

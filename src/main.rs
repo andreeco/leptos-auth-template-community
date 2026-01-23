@@ -2,18 +2,13 @@
 mod auth;
 
 #[cfg(feature = "ssr")]
-use auth::{AuthSession, Backend, Credentials};
+use auth::Backend;
 
 #[cfg(feature = "ssr")]
 mod state;
 
 #[cfg(feature = "ssr")]
-use axum::{
-    extract::Form,
-    response::{Html, IntoResponse, Redirect},
-    routing::get,
-    Router,
-};
+use axum::Router;
 
 #[cfg(feature = "ssr")]
 use axum_login::AuthManagerLayerBuilder;
@@ -21,19 +16,27 @@ use axum_login::AuthManagerLayerBuilder;
 #[cfg(feature = "ssr")]
 use tower_sessions::{MemoryStore, SessionManagerLayer};
 
+use axum::extract::Extension;
+
+pub async fn debug_extensions(maybe_auth: Option<Extension<crate::auth::AuthSession>>) -> String {
+    if let Some(auth) = maybe_auth {
+        format!("AuthSession IS present! User: {:?}", auth.user)
+    } else {
+        "AuthSession not present!".to_string()
+    }
+}
+
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
     use crate::state::AppState;
-    use leptos_axum_login_try::app::*;
-    use leptos::logging::log;
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
+    use leptos_axum_login_try::app::*; // App, shell
 
-    // Leptos SSR boilerplate
     let conf = get_configuration(None).unwrap();
-    let addr = conf.leptos_options.site_addr;
     let leptos_options = conf.leptos_options;
+    let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
     let app_state = AppState {
@@ -41,21 +44,26 @@ async fn main() {
         routes: routes.clone(),
     };
 
+    // --- axum-login setup ---
     let backend = Backend::new();
     let session_store = MemoryStore::default();
     let session_layer = SessionManagerLayer::new(session_store).with_secure(false);
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
+    use tower_cookies::CookieManagerLayer;
+
     let app = Router::new()
-        .route("/login", get(login_page).post(do_login))
-        .route("/logout", get(logout))
-        .route("/protected", get(protected))
+        .route(
+            "/api/debug-extensions",
+            axum::routing::get(debug_extensions),
+        )
         .leptos_routes_with_context(
             &app_state,
             routes,
             {
                 let state = app_state.clone();
                 move || {
+                    // provide shared state (DB, config, etc) to leptos
                     leptos::prelude::provide_context(state.clone());
                 }
             },
@@ -66,9 +74,10 @@ async fn main() {
         )
         .fallback(leptos_axum::file_and_error_handler::<AppState, _>(shell))
         .layer(auth_layer)
+        .layer(CookieManagerLayer::new())
         .with_state(app_state);
 
-    log!("listening on http://{}", &addr);
+    leptos::logging::log!("listening on http://{}", &addr);
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app.into_make_service())
         .await
@@ -77,51 +86,6 @@ async fn main() {
 
 #[cfg(not(feature = "ssr"))]
 pub fn main() {}
-
-#[cfg(feature = "ssr")]
-#[axum::debug_handler]
-async fn do_login(mut auth: AuthSession, Form(creds): Form<Credentials>) -> impl IntoResponse {
-    if let Ok(Some(user)) = auth.authenticate(creds).await {
-        if auth.login(&user).await.is_ok() {
-            return Redirect::to("/protected").into_response();
-        }
-    }
-    Redirect::to("/login").into_response()
-}
-
-#[cfg(feature = "ssr")]
-async fn logout(mut auth: AuthSession) -> impl IntoResponse {
-    let _ = auth.logout().await;
-    Redirect::to("/login")
-}
-
-#[cfg(feature = "ssr")]
-async fn protected(auth: AuthSession) -> impl IntoResponse {
-    // if let Some(user) = auth.user().await { // does not work
-    if let Some(user) = auth.user.clone() {
-        Html(format!(
-            "Hi {}, you are logged in! \
-             <form action=\"/logout\"><button>Logout</button></form>",
-            user.username
-        ))
-        .into_response()
-    } else {
-        Redirect::to("/login").into_response()
-    }
-}
-
-#[cfg(feature = "ssr")]
-async fn login_page() -> Html<&'static str> {
-    Html(
-        r#"
-    <form method="POST" action="/login">
-      <input name="username" placeholder="username" value="user">
-      <input name="password" type="password" placeholder="password" value="password">
-      <button>Log In</button>
-    </form>
-    "#,
-    )
-}
 
 // This is the original code
 /*

@@ -93,9 +93,3 @@ impl AuthnBackend for Backend {
 }
 
 pub type AuthSession = axum_login::AuthSession<Backend>;
-
-#[cfg(feature = "ssr")]
-pub async fn auth() -> Result<AuthSession, leptos::server_fn::ServerFnError> {
-    let auth = leptos_axum::extract().await?;
-    Ok(auth)
-}

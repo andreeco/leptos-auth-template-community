@@ -9,7 +9,7 @@ german = "Deutsch"
 english = "English"
 
 [home]
-title = "Welcome to Andre Herling"
+title = "Welcome"
 heading = "Welcome to my website!"
 
 
@@ -32,6 +32,6 @@ heading = "Imprint Statement"
 heading = "Page not found."
 
 [footer]
-copyright = "© 2026 Andre Herling | "
+copyright = "© 2026 Example | "
 imprint = "Impressum"
 privacy = "Privacy Policy"

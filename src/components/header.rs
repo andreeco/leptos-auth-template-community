@@ -10,7 +10,8 @@ pub fn Header() -> impl IntoView {
             <nav>
                 <a href="/">{t!(i18n, header.home)}</a> |
                 <a href="/kontakt">{t!(i18n, header.contact)}</a> |
-                 <a href="/protectedleptos">{"ProtectedDummy"}</a> |
+                 <a href="/login">{"Login"}</a> |
+                 <a href="/protected">{"Protected"}</a> |
                 <LangSwitch />
             </nav>
             <hr/>
