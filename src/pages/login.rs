@@ -7,11 +7,11 @@ use http::StatusCode;
 #[server(LoginUser)]
 pub async fn login_user(username: String, password: String) -> Result<(), ServerFnError> {
     use crate::auth::{AuthSession, Credentials};
-    use axum::Extension;
 
     let res = leptos_axum::ResponseOptions::default();
-    let Extension(mut auth): Extension<AuthSession> = leptos_axum::extract().await?;
+    //let Extension(mut auth): Extension<AuthSession> = leptos_axum::extract().await?;
 
+    let mut auth: AuthSession = expect_context::<AuthSession>();
     let creds = Credentials { username, password };
 
     match auth.authenticate(creds).await {
@@ -20,6 +20,8 @@ pub async fn login_user(username: String, password: String) -> Result<(), Server
                 res.set_status(StatusCode::INTERNAL_SERVER_ERROR);
                 return Err(ServerFnError::ServerError("Login failed".into()));
             }
+            // provide context
+            provide_context(auth.clone());
             leptos_axum::redirect("/protectedleptos");
             Ok(())
         }

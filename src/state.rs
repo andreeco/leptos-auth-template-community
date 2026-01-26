@@ -1,3 +1,5 @@
+#![cfg(feature = "ssr")]
+
 use axum::extract::FromRef;
 use leptos::prelude::LeptosOptions;
 use leptos_axum::AxumRouteListing;

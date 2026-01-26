@@ -3,12 +3,25 @@ use leptos::prelude::*;
 // #[cfg(feature = "ssr")]
 // use crate::auth::AuthSession; // your axum-login alias
 
-#[server]
+/* #[server]
 pub async fn is_logged_in() -> Result<bool, ServerFnError> {
     use crate::auth::AuthSession;
 
     let auth: AuthSession = leptos_axum::extract().await?;
     Ok(auth.user.is_some())
+} */
+
+#[server]
+pub async fn is_logged_in() -> Result<bool, ServerFnError> {
+    use crate::auth::AuthSession;
+
+    let session = use_context::<AuthSession>();
+
+    if let Some(sess) = session {
+        Ok(sess.user.is_some())
+    } else {
+        Ok(false)
+    }
 }
 
 #[component]
