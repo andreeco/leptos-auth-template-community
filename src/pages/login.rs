@@ -22,7 +22,7 @@ pub async fn login_user(username: String, password: String) -> Result<(), Server
             }
             // provide context
             provide_context(auth.clone());
-            leptos_axum::redirect("/protectedleptos");
+            leptos_axum::redirect("/protected");
             Ok(())
         }
         Ok(None) => {
