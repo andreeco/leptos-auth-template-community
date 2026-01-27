@@ -6,6 +6,7 @@ pub mod pages;
 pub use app::{shell, App}; // if needed for SSR setup
 
 pub mod auth;
+pub mod state;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
