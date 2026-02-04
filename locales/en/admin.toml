@@ -1,0 +1,4 @@
+title = "Admin"
+forbidden = "Forbidden (admin only)."
+welcome = "Welcome,"
+fake_note = "This is a fake admin page."

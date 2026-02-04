@@ -1,0 +1,29 @@
+title = "Leptos Axum Login Demo"
+heading = "Leptos + Axum Login Demo"
+intro = "Eine kleine Referenz-App für Session-Login mit Leptos (SSR + Hydration) und Axum. Sie zeigt, wie man Auth serverseitig durchsetzt und den UI-State sauber synchron hält."
+
+what_title = "Was diese Demo zeigt"
+what_1 = "Session-Login mit axum-login + tower-sessions"
+what_2 = "UI-State (AuthState) wird nach Login/Logout per Server-Snapshot aktualisiert"
+what_3 = "Authentifizierte Serverfunktionen über `/api/secure/*` + Middleware"
+what_4 = "Zusätzliche serverseitige Checks (z.B. Adminrolle) in Serverfunktionen"
+what_5 = "Basis-Härtung: Security-Header, Rate Limiting, CSRF-Schutz (Token in der Session; Login/Logout prüfen CSRF)"
+
+how_title = "Schnell ausprobieren"
+how_1 = "Öffne die Login-Seite."
+how_2 = "Benutzer: 'user' oder 'admin' — Passwort: 'password'."
+how_3 = "Als Admin siehst du zusätzlich die Admin-Seite."
+
+rules_title = "Wichtige Regeln (damit es sicher bleibt)"
+rules_1 = "UI ist keine Sicherheitsgrenze: Links ausblenden ersetzt keine serverseitige Prüfung."
+rules_2 = "Leptos `#[server]` Funktionen sind HTTP-Endpunkte. Jede schreibende Aktion braucht serverseitige Checks (Session/Rolle/Permission)."
+rules_3 = "Zustandsändernde Requests müssen CSRF prüfen (in dieser Demo: Login/Logout; weitere Mutationen müssen das ebenfalls tun)."
+rules_4 = "Wenn du einen Reverse Proxy nutzt (z.B. Caddy), sollte Axum nur intern erreichbar sein. Forwarded-Header dürfen nur vom Proxy kommen."
+
+paths_title = "Routen & API-Pfade"
+paths_1 = "Öffentliche Serverfunktionen: `/api/{*fn_name}`"
+paths_2 = "Geschützte Serverfunktionen: `/api/secure/{*fn_name}` (Login per Middleware erforderlich)"
+paths_3 = "UI-Routen wie `/protected` oder `/admin` sind keine Geheimhaltung: sensible Daten/Aktionen gehören in geschützte Serverfunktionen."
+
+demo_warning_title = "Demo-Hinweis"
+demo_warning = "Nicht produktionsreif: Sessions verwenden MemoryStore (nicht persistent/ nicht verteilt). Für Produktion: Persistenter Session-Store (z.B. Redis), HTTPS-only Cookies, HSTS am Reverse Proxy, Logging/Lockouts für Login, vollständige CSRF-Abdeckung."

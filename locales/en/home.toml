@@ -1,0 +1,29 @@
+title = "Leptos Axum Login Demo"
+heading = "Leptos + Axum Login Demo"
+intro = "A small reference app for session-based login with Leptos (SSR + hydration) and Axum. It shows how to enforce auth on the server and keep the UI state in sync."
+
+what_title = "What this demo includes"
+what_1 = "Session login with axum-login + tower-sessions"
+what_2 = "UI state (AuthState) is refreshed via a server snapshot after login/logout"
+what_3 = "Authenticated server functions under `/api/secure/*` + middleware"
+what_4 = "Extra server-side checks (e.g. admin role) inside server functions"
+what_5 = "Basic hardening: security headers, rate limiting, CSRF protection (token stored in session; login/logout validate CSRF)"
+
+how_title = "Try it quickly"
+how_1 = "Open the login page."
+how_2 = "Username: 'user' or 'admin' — password: 'password'."
+how_3 = "As admin you’ll also see the admin page."
+
+rules_title = "Rules that keep it safe"
+rules_1 = "The UI is not a security boundary: hiding links is not access control."
+rules_2 = "Leptos `#[server]` functions are HTTP endpoints. Every write action needs server-side checks (session/role/permission)."
+rules_3 = "State-changing requests must validate CSRF (this demo covers login/logout; any added mutations must do the same)."
+rules_4 = "If you run behind a reverse proxy (e.g. Caddy), Axum should only be reachable internally. Forwarded headers must only come from the proxy."
+
+paths_title = "Routes & API paths"
+paths_1 = "Public server functions: `/api/{*fn_name}`"
+paths_2 = "Protected server functions: `/api/secure/{*fn_name}` (login required via middleware)"
+paths_3 = "UI routes like `/protected` or `/admin` are not secrecy: sensitive data/actions must live in protected server functions."
+
+demo_warning_title = "Demo note"
+demo_warning = "Not production-ready: sessions use MemoryStore (not persistent/not shared). For production: persistent session store (e.g. Redis), HTTPS-only cookies, HSTS at the reverse proxy, login logging/lockouts, full CSRF coverage."

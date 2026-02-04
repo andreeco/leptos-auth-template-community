@@ -1,0 +1,6 @@
+title = "Logout"
+confirm = "Möchten Sie sich wirklich abmelden?"
+redirect_note = "Sie werden abgemeldet..."
+login_again = "Erneut anmelden"
+cancel = "Abbrechen"
+logging_out = "Abmeldung läuft..."

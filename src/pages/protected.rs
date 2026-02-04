@@ -1,35 +1,60 @@
+use crate::auth_state::AuthState;
+use crate::i18n::*;
 use leptos::prelude::*;
+use leptos::task::spawn_local;
 
-// #[cfg(feature = "ssr")]
-// use crate::auth::AuthSession; // your axum-login alias
-
-/* #[server]
-pub async fn is_logged_in() -> Result<bool, ServerFnError> {
+#[server(prefix = "/api/secure")]
+pub async fn add_two(a: i32, b: i32) -> Result<i32, ServerFnError> {
     use crate::auth::AuthSession;
+    use axum::Extension;
 
-    let auth: AuthSession = leptos_axum::extract().await?;
-    Ok(auth.user.is_some())
-} */
+    let Extension(auth): Extension<AuthSession> = leptos_axum::extract().await?;
 
-#[server]
-pub async fn is_logged_in() -> Result<bool, ServerFnError> {
-    use crate::auth::AuthSession;
-
-    let session = use_context::<AuthSession>();
-
-    if let Some(sess) = session {
-        Ok(sess.user.is_some())
-    } else {
-        Ok(false)
+    if auth.user.is_none() {
+        return Err(ServerFnError::ServerError("Not authenticated".into()));
     }
+
+    Ok(a + b)
 }
 
 #[component]
 pub fn Protected() -> impl IntoView {
+    let i18n = use_i18n();
+    let auth = expect_context::<AuthState>();
+    let sum = RwSignal::new(None);
+    let error = RwSignal::new(None);
+
+    let compute = move |_| {
+        let sum = sum.clone();
+        let error = error.clone();
+        spawn_local(async move {
+            match add_two(21, 21).await {
+                Ok(value) => {
+                    sum.set(Some(value));
+                    error.set(None);
+                }
+                Err(e) => {
+                    error.set(Some(e.to_string()));
+                    sum.set(None);
+                }
+            }
+        });
+    };
+
     view! {
-        <h1>Protected Page</h1>
-        <p>You are logged.</p>
-        <p>You can manually change the signal in app.rs.</p>
-        <a href="/logout">Logout (server)</a>
+        <h1>{t!(i18n, protected.title)}</h1>
+        <p>
+            {t!(i18n, protected.login_as)}
+            {move || auth.username().unwrap_or_else(|| "user".into())}
+        </p>
+        <button on:click=compute>{t!(i18n, protected.button)}</button>
+        <Show when=move || sum.get().is_some()>
+            <p>
+                {t!(i18n, protected.result)} {move || sum.get().unwrap().to_string()}
+            </p>
+        </Show>
+        <Show when=move || error.get().is_some()>
+            <p style="color:red">{move || error.get().unwrap_or_default()}</p>
+        </Show>
     }
 }

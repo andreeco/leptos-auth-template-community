@@ -1,3 +1,4 @@
+use crate::components::contact_button::ContactButton;
 use crate::i18n::*;
 use leptos::prelude::*;
 use leptos_meta::{Link as MetaLink, Title};
@@ -14,7 +15,7 @@ pub fn Contact() -> impl IntoView {
             {t!(i18n, contact.email)}
             <a href="mailto:kontakt@leptos-axum-login-try.de">kontakt@leptos-axum-login-try.de</a>
         </p>
-        <a href="/en/contact_me">{t!(i18n, contact.english_version)}</a>
+        <ContactButton />
     }
 }
 

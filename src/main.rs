@@ -1,162 +1,101 @@
 #[cfg(feature = "ssr")]
-use axum::Router;
-
-#[cfg(feature = "ssr")]
-use axum_login::AuthManagerLayerBuilder;
-
-#[cfg(feature = "ssr")]
-use tower_sessions::{MemoryStore, SessionManagerLayer};
-
-use axum::extract::Extension;
-
-#[cfg(feature = "ssr")]
-use leptos_axum_login_try::{auth::{AuthSession, Backend}, state::AppState};
-#[cfg(feature = "ssr")]
-use axum::{
-    extract::{Request, State},
-    response::IntoResponse,
-    routing::get,
-};
-#[cfg(feature = "ssr")]
-use leptos::prelude::provide_context;
-#[cfg(feature = "ssr")]
-use leptos_axum::handle_server_fns_with_context;
-
-#[cfg(feature = "ssr")]
-use axum::body::Body as AxumBody;
-use leptos::prelude::LeptosOptions;
-
-#[cfg(feature = "ssr")]
-async fn server_fn_handler(
-    State(app_state): State<AppState>,
-    auth_session: AuthSession,
-    request: Request<AxumBody>,
-) -> impl IntoResponse {
-    handle_server_fns_with_context(
-        move || {
-            provide_context(app_state.clone());
-            provide_context(auth_session.clone());
-        },
-        request,
-    )
-    .await
-}
-
-#[cfg(feature = "ssr")]
-pub async fn leptos_routes_handler(
-    auth_session: AuthSession,
-    State(app_state): State<AppState>,
-    axum::extract::State(option): axum::extract::State<LeptosOptions>,
-    request: Request<AxumBody>,
-) -> axum::response::Response {
-    let leptos_options = option.clone();
-    let handler = leptos_axum::render_app_async_with_context(
-        move || {
-            provide_context(option.clone());
-            provide_context(app_state.clone());
-            provide_context(auth_session.clone());
-            //provide_context(app_state.pool.clone());
-        },
-        move || leptos_axum_login_try::app::shell(leptos_options.clone()),
-    );
-
-    handler(request).await.into_response()
-}
-
-pub async fn debug_extensions(maybe_auth: Option<Extension<leptos_axum_login_try::auth::AuthSession>>) -> String {
-    if let Some(auth) = maybe_auth {
-        format!("AuthSession IS present! User: {:?}", auth.user)
-    } else {
-        "AuthSession not present!".to_string()
-    }
-}
+mod server;
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use leptos::prelude::*;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
-    use leptos_axum_login_try::app::*; // App, shell
-
-    let conf = get_configuration(None).unwrap();
-    let leptos_options = conf.leptos_options;
-    let addr = leptos_options.site_addr;
-    let routes = generate_route_list(App);
-
-    let app_state = AppState {
-        leptos_options,
-        routes: routes.clone(),
-    };
-
-    // --- axum-login setup ---
-    let backend = Backend::new();
-    let session_store = MemoryStore::default();
-    let session_layer = SessionManagerLayer::new(session_store).with_secure(false);
-    let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
-
-    // dont think you need this
-    //use tower_cookies::CookieManagerLayer;
-
-    let app = Router::new()
-        .route(
-            "/api/{*fn_name}",
-            get(server_fn_handler).post(server_fn_handler),
-        )
-        .leptos_routes_with_handler(routes, get(leptos_routes_handler))
-        .fallback(leptos_axum::file_and_error_handler::<AppState, _>(shell))
-        .layer(auth_layer)
-        //.layer(CookieManagerLayer::new())
-        .with_state(app_state);
-
-    leptos::logging::log!("listening on http://{}", &addr);
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app.into_make_service())
-        .await
-        .unwrap();
+    server::run().await;
 }
 
 #[cfg(not(feature = "ssr"))]
 pub fn main() {}
 
-// This is the original code
-/*
- * #[cfg(feature = "ssr")]
-#[tokio::main]
-async fn main() {
-   leptos_axum_login_try::app::*;
-    use axum::Router;
-    use leptos::logging::log;
-    use leptos::prelude::*;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
+// Authorization footgun: /api/secure/* is login-only; admin must be enforced per fn or via admin route group.
 
-    let conf = get_configuration(None).unwrap();
-    let addr = conf.leptos_options.site_addr;
-    let leptos_options = conf.leptos_options;
-    // Generate the list of routes in your Leptos App
-    let routes = generate_route_list(App);
+// ### Two ways to enforce auth for Leptos `#[server]` functions (what you did vs. `MiddlewareSet`)
 
-    let app = Router::new()
-        .leptos_routes(&leptos_options, routes, {
-            let leptos_options = leptos_options.clone();
-            move || shell(leptos_options.clone())
-        })
-        .fallback(leptos_axum::file_and_error_handler(shell))
-        .with_state(leptos_options);
+// #### 1) What you did (Axum router-level middleware; recommended with Axum)
+// **Idea:** Treat server functions as ordinary HTTP endpoints and protect whole URL groups in Axum.
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
-    log!("listening on http://{}", &addr);
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app.into_make_service())
-        .await
-        .unwrap();
-}
+// - You mounted server fns at:
+//   - public: `/api/{*fn_name}`
+//   - authenticated: `/api/secure/{*fn_name}`
+// - You applied Axum middleware to the secure group:
+//   - `login_required!(Backend)` (from `axum-login`)
+// - You made “secure” server functions use:
+//   - `#[server(prefix="/api/secure")]`
 
-#[cfg(not(feature = "ssr"))]
-pub fn main() {
-    // no client-side main function
-    // unless we want this to work with e.g., Trunk for pure client-side testing
-    // see lib.rs for hydration function instead
-}
+// **Result:**
+// - Any server fn under `/api/secure/*` requires a valid session.
+// - Role/permission checks are still done inside server fn bodies (e.g. `admin_add_two` checks `Role::Admin`).
 
-*/
+// **Pros:**
+// - Central, obvious, idiomatic Axum.
+// - Works with any extractor/session/auth crate.
+// - Easy to reason about and test.
+
+// ---
+
+// #### 2) How it would look with `server_fn::MiddlewareSet` (per-function middleware)
+// **Idea:** Each server function can provide its own middleware stack, independent of how the Axum router groups routes.
+
+// Conceptually you’d do something like:
+
+// - Define a layer that checks authentication/authorization.
+// - Attach it to a specific server fn via its generated `ServerFn` type’s middleware hook.
+
+// Pseudo-example (illustrative, not copy/paste-ready because the exact trait hooks depend on server_fn version/integration):
+
+// ```rust
+// use leptos::prelude::*;
+// use leptos::server_fn::MiddlewareSet;
+// use std::sync::Arc;
+// use tower_layer::Layer;
+
+// #[server]
+// pub async fn secure_action() -> Result<(), ServerFnError> {
+//     // body runs only if middleware allows request
+//     Ok(())
+// }
+
+// // Somewhere: implement middleware for this server fn type
+// impl secure_action::ServerFn for SecureAction {
+//     fn middlewares() -> MiddlewareSet<Req, Res> {
+//         vec![
+//             Arc::new(RequireLoginLayer::new()),
+//             // Arc::new(RequireRoleLayer::admin()),
+//         ]
+//     }
+// }
+// ```
+
+// **What this would achieve:**
+// - The server fn endpoint is protected even if it is under `/api/*` with no Axum route grouping.
+// - Each server fn can have different middleware (login-only vs admin-only vs rate limited, etc.).
+
+// **Pros:**
+// - Fine-grained, per-function policy.
+// - Doesn’t rely on router structure.
+
+// **Cons (why most Axum apps don’t use it):**
+// - More complex; harder to see “what is protected” at a glance.
+// - You still need to access session/auth data inside layers (extractors/state wiring).
+// - In practice, router-level middleware is simpler and clearer for Axum.
+
+// ---
+
+// ### “How Leptos originally wanted it”
+// Leptos’ core message is not “use MiddlewareSet”; it’s:
+
+// 1) `#[server]` functions are **public HTTP endpoints**.
+// 2) Therefore enforce **security on the server** (auth/roles/CSRF), not in the UI.
+
+// Leptos provides `MiddlewareSet` as an *optional mechanism* to layer security per server fn. In Axum, it’s equally valid (and usually preferable) to enforce auth via Axum router middleware, which is what you did.
+
+// ---
+
+// ### One-liner summary
+// - **You did:** Axum router groups + `login_required!` + per-fn role checks. (Simple, idiomatic)
+// - **MiddlewareSet approach:** attach tower layers per server fn endpoint. (More granular, more complex)
+
+// If you later want “admin middleware automatically,” the Axum-style version is usually: create `/api/admin/*` + an admin-check layer, rather than `MiddlewareSet`.

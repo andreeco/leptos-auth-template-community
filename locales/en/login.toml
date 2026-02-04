@@ -1,0 +1,5 @@
+title = "Login"
+username = "Username"
+password = "Password"
+button = "Log In"
+error = "Invalid credentials"
