@@ -22,4 +22,19 @@ cargo leptos watch
 ```
 
 ## Notes
-This is just a demo, not production-ready (uses an in-memory session store). For real use you’d want a persistent session store (e.g. Redis), HTTPS-only cookies, and full CSRF coverage for all state-changing actions.
+This is a focused demo, not production-ready (it uses an in-memory session store). For real use, you’d want a persistent session store (e.g. Redis), HTTPS-only cookies, and complete CSRF coverage for all state-changing actions.
+
+## Bigger sibling project (`auth-leptos-demo`)
+There is also a larger demo project, which is not published (yet?).
+
+In a summary, it extends the same foundation into a broader, more complete setup with:
+
+- full account flows (sign-up/sign-in/sign-out, confirmation, recovery, reset)
+- stronger authentication options (including MFA choices such as TOTP and WebAuthn)
+- user self-service pages (profile, sessions, security-related actions)
+- admin and operational screens (management, audit/activity visibility, policy controls)
+- shared database model and migrations (SeaORM)
+- an integration example that wires everything together in one place
+
+`leptos-axum-login-try` remains the small, readable starting point.  
+`auth-leptos-demo` is the bigger one for when one needs a wider feature set.

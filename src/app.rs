@@ -100,7 +100,7 @@ pub fn App() -> impl IntoView {
                                         Some(auth.logged_in())
                                     }
                                 }
-                                redirect_path=move || i18n_path!(Locale, |locale| td_string!(locale, routes.login_path))
+                                redirect_path=move || "/login".to_string()
                                 fallback=|| view! { <p>Checking login...</p> }
                             />
                             <ProtectedRoute
@@ -113,7 +113,7 @@ pub fn App() -> impl IntoView {
                                         Some(auth.is_admin())
                                     }
                                 }
-                                redirect_path=move || i18n_path!(Locale, |locale| td_string!(locale, routes.login_path))
+                                redirect_path=move || "/login".to_string()
                                 fallback=|| view! { <p>Checking admin access...</p> }
                             />
                         </I18nRoute<Locale, _,_>>
