@@ -1,0 +1,9 @@
+title = "Logout"
+confirm = "Möchten Sie sich wirklich abmelden?"
+
+cancel = "Abbrechen"
+logging_out = "Abmeldung läuft..."
+
+error_internal = "Interner Fehler beim Abmelden."
+error_session = "Sitzungsfehler beim Abmelden."
+error_csrf = "Sicherheits-Token ungültig. Bitte Seite neu laden und erneut versuchen."

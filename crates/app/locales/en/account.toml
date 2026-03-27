@@ -1,0 +1,47 @@
+title = "Account"
+checking_account_status = "Checking account status..."
+login_required_manage_account = "You need to be logged in to manage your account."
+go_to_login = "Go to login"
+
+signed_in_as = "Signed in as"
+fallback_username = "user"
+
+security = "Security"
+profile_link = "Profile"
+change_password_link = "Change password"
+passkeys_link = "Passkeys (WebAuthn)"
+
+profile_title = "Profile"
+profile_first_name_label = "First name"
+profile_last_name_label = "Last name"
+profile_email_label = "Email"
+profile_loading = "Loading profile..."
+profile_save = "Save profile"
+
+password_title = "Change password"
+login_required_change_password = "You need to be logged in to change your password."
+current_password_label = "Current password"
+new_password_label = "New password"
+confirm_new_password_label = "Confirm new password"
+
+submit_change_password = "Change password"
+submit_updating = "Updating..."
+submit_saving_profile = "Saving profile..."
+
+error_missing_csrf = "Missing CSRF token. Please refresh and try again."
+error_password_mismatch = "New password and confirmation do not match."
+error_password_too_short = "New password must be at least 10 characters long."
+error_current_password_incorrect = "Current password is incorrect."
+error_user_not_found = "User not found."
+error_not_authenticated = "You must be logged in."
+error_forbidden = "You are not allowed to perform this action."
+error_session = "Session error. Please try again."
+error_invalid_email = "Please enter a valid email address."
+error_email_taken = "This email address is already in use."
+error_username_exists = "This username is already in use."
+error_unknown = "An unknown error occurred."
+
+success_password_updated = "Password updated successfully."
+success_profile_updated = "Profile updated successfully."
+
+back_to_account = "Back to account"

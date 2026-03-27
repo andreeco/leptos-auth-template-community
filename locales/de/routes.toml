@@ -1,8 +1,0 @@
-contact_path = "kontakt"
-imprint_path = "impressum"
-privacy_path = "datenschutzerklaerung"
-admin_path = "admin"
-login_path = "login"
-logout_path = "logout"
-protected_path = "protected"
-home_path = ""

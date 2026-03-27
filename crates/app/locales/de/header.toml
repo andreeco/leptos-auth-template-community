@@ -1,0 +1,12 @@
+home = "Startseite"
+contact = "Kontakt"
+protected = "Geschützt"
+
+account = "Konto"
+
+admin = "Admin"
+login = "Anmelden"
+logout = "Abmelden"
+
+german_label = "Deutsch"
+english_label = "English"

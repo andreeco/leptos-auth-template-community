@@ -1,0 +1,9 @@
+title = "Geschützte Seite"
+login_as = "Eingeloggt als:"
+button = "21 + 21 addieren (Server)!"
+result = "Ergebnis vom Server:"
+not_authenticated = "Nicht eingeloggt"
+
+guard_checking_login = "Anmeldung wird geprüft..."
+guard_checking_account_access = "Kontozugriff wird geprüft..."
+guard_checking_admin_access = "Adminzugriff wird geprüft..."

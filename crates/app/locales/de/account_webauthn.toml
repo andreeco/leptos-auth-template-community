@@ -1,0 +1,58 @@
+title = "Passkeys (WebAuthn)"
+checking_account_status = "Kontostatus wird geprüft..."
+need_logged_in_manage_passkeys = "Sie müssen angemeldet sein, um Passkeys zu verwalten."
+go_to_login = "Zur Anmeldung"
+
+signed_in_as = "Angemeldet als"
+default_username = "Benutzer"
+
+enroll_help = "Dies öffnet den Passkey-Dialog Ihres Browsers/Systems und speichert die Zugangsdaten."
+
+passkey_name_label = "Passkey-Name"
+passkey_name_placeholder = "z. B. MacBook Touch ID"
+
+register_passkey = "Passkey registrieren"
+registering = "Wird registriert..."
+
+your_passkeys = "Ihre Passkeys"
+loading_passkeys = "Passkeys werden geladen..."
+no_passkeys_registered = "Noch keine Passkeys registriert."
+created_at_prefix = "erstellt"
+
+delete = "Löschen"
+
+msg_missing_csrf = "CSRF-Token fehlt. Bitte Seite neu laden und erneut versuchen."
+msg_passkey_name_required = "Bitte geben Sie einen Passkey-Namen an."
+msg_passkey_registered = "Passkey registriert."
+msg_passkey_deleted = "Passkey gelöscht."
+
+err_failed_load_passkeys_prefix = "Passkeys konnten nicht geladen werden"
+err_passkey_registration_failed_prefix = "Passkey-Registrierung fehlgeschlagen"
+err_delete_failed_prefix = "Löschen fehlgeschlagen"
+err_not_authenticated = "Nicht authentifiziert"
+err_forbidden = "Verboten"
+err_user_not_found = "Benutzer nicht gefunden"
+err_session_error = "Sitzungsfehler"
+err_missing_registration_state = "Registrierungsstatus fehlt"
+err_missing_discoverable_auth_state = "Status für Discoverable-Authentifizierung fehlt"
+err_unknown_user_for_discoverable_credential = "Unbekannter Benutzer für discoverable Zugangsdaten"
+err_no_passkeys_registered_for_user = "Für diesen Benutzer sind keine Passkeys registriert"
+err_passkey_json_serialize_failed = "Passkey-JSON konnte nicht serialisiert werden"
+err_invalid_stored_passkey_json = "Ungültiges gespeichertes Passkey-JSON"
+err_base64url_decode_failed = "Base64url-Dekodierung fehlgeschlagen"
+err_missing_webauthn_user_handle = "WebAuthn-Benutzerkennung fehlt"
+err_invalid_webauthn_user_handle = "Ungültige WebAuthn-Benutzerkennung"
+err_webauthn_requires_wasm = "WebAuthn erfordert WASM-Hydrierung im Browser."
+err_no_window = "Browserfenster ist nicht verfügbar."
+err_navigator_credentials_create_failed = "Erstellung der Zugangsdaten konnte nicht gestartet werden."
+err_create_credential_rejected = "Erstellung der Zugangsdaten wurde abgebrochen."
+err_create_credential_invalid_response = "Erstellung der Zugangsdaten lieferte eine unerwartete Antwort."
+err_navigator_credentials_get_failed = "Anforderung der Zugangsdaten konnte nicht gestartet werden."
+err_get_credential_rejected = "Anforderung der Zugangsdaten wurde abgebrochen."
+err_get_credential_invalid_response = "Anforderung der Zugangsdaten lieferte eine unerwartete Antwort."
+err_server_only = "Dieser Vorgang ist nur auf dem Server verfügbar."
+
+origin_warning_title = "Sicherheitshinweis zur Passkey-Registrierung"
+origin_warning_body = "Die Passkey-Registrierung ist strikt an die Origin gebunden. Verwenden Sie für diese App durchgehend http://localhost mit demselben Host und Port (z. B. http://localhost:3000) und vermeiden Sie 127.0.0.1, da WebAuthn in diesem Setup dort häufig nicht zuverlässig funktioniert."
+
+back_to_account = "Zurück zum Konto"

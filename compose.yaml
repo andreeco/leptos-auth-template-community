@@ -1,0 +1,60 @@
+name: leptos-auth-template-community
+
+services:
+  app:
+    image: ${IMAGE:-ghcr.io/example/leptos-auth-template-community:latest}
+    container_name: leptos-auth-template-community
+    restart: unless-stopped
+    pull_policy: always
+
+    environment:
+      # Core app runtime
+      LEPTOS_ENV: ${LEPTOS_ENV:-production}
+      LEPTOS_SITE_ADDR: 0.0.0.0:3000
+      LEPTOS_SITE_ROOT: site
+      RUST_LOG: ${RUST_LOG:-info}
+
+      # Database (SQLite in mounted /data volume)
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///data/app.sqlite?mode=rwc}
+
+      # Startup behavior
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-1}
+      SEED_ON_BOOT: ${SEED_ON_BOOT:-0}
+      SEED_ALLOW_ADMIN: ${SEED_ALLOW_ADMIN:-0}
+
+      # WebAuthn relying party settings
+      # Local dev: localhost is fine.
+      # Production: set your real HTTPS origin and matching RP ID.
+      WEBAUTHN_RP_ORIGIN: ${WEBAUTHN_RP_ORIGIN:-http://localhost:3000}
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-example-app}
+
+      # Optional seed controls (used only when SEED_ON_BOOT=1)
+      # SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      # SEED_ADMIN_FORCE_RESET: ${SEED_ADMIN_FORCE_RESET:-0}
+      # SEED_DEV_INSECURE: ${SEED_DEV_INSECURE:-0}
+
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+
+    volumes:
+      - ./data:/data
+
+    # Optional healthcheck (enable if you want runtime readiness checks)
+    # healthcheck:
+    #   test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    #   start_period: 15s
+
+    # Optional Docker secrets pattern (commented by default).
+    # Use only if your app reads secret files from /run/secrets.
+    #
+    # secrets:
+    #   - app_pepper
+
+# Optional secrets declaration
+# secrets:
+#   app_pepper:
+#     file: ./secrets/app_pepper.txt

@@ -1,0 +1,21 @@
+title = "Login"
+
+username = "Username"
+password = "Password"
+
+button = "Log In"
+button_pending = "Logging in..."
+
+passkey_button = "Login with passkey"
+passkey_button_pending = "Waiting for passkey..."
+
+error_invalid_credentials = "Invalid credentials"
+error_password_reset_required = "You must change your password before continuing."
+error_missing_csrf = "Missing CSRF token. Please refresh and try again."
+error_security_token = "Security token validation failed. Refresh and try again."
+error_internal = "Internal error"
+error_session = "Session error"
+error_session_refresh_failed = "Session refresh failed"
+error_passkey_failed = "Passkey login failed"
+error_passkey_session_refresh_failed = "Passkey login succeeded, but the session state failed to refresh"
+error_unsupported_target = "Login requires hydrate (wasm32)."

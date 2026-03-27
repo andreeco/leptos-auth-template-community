@@ -1,0 +1,59 @@
+title = "Passkeys (WebAuthn)"
+checking_account_status = "Checking account status..."
+need_logged_in_manage_passkeys = "You need to be logged in to manage passkeys."
+go_to_login = "Go to login"
+
+signed_in_as = "Signed in as"
+default_username = "user"
+
+enroll_help = "This opens your browser/platform passkey prompt and stores the credential."
+
+passkey_name_label = "Passkey name"
+passkey_name_placeholder = "e.g. MacBook Touch ID"
+
+register_passkey = "Register passkey"
+registering = "Registering..."
+
+your_passkeys = "Your passkeys"
+loading_passkeys = "Loading passkeys..."
+no_passkeys_registered = "No passkeys registered yet."
+
+created_at_prefix = "created"
+delete = "Delete"
+
+msg_missing_csrf = "Missing CSRF token. Refresh and try again."
+msg_passkey_name_required = "Please provide a passkey name."
+msg_passkey_registered = "Passkey registered."
+msg_passkey_deleted = "Passkey deleted."
+
+err_failed_load_passkeys_prefix = "Failed to load passkeys"
+err_passkey_registration_failed_prefix = "Passkey registration failed"
+err_delete_failed_prefix = "Delete failed"
+
+err_not_authenticated = "Not authenticated"
+err_forbidden = "Forbidden"
+err_user_not_found = "User not found"
+err_session_error = "Session error"
+err_missing_registration_state = "Missing registration state"
+err_missing_discoverable_auth_state = "Missing discoverable authentication state"
+err_unknown_user_for_discoverable_credential = "Unknown user for discoverable credential"
+err_no_passkeys_registered_for_user = "No passkeys registered for this user"
+err_invalid_stored_passkey_json = "Invalid stored passkey data"
+err_passkey_json_serialize_failed = "Failed to serialize passkey data"
+err_base64url_decode_failed = "Failed to decode base64url value"
+err_missing_webauthn_user_handle = "Missing WebAuthn user handle"
+err_invalid_webauthn_user_handle = "Invalid WebAuthn user handle"
+err_webauthn_requires_wasm = "WebAuthn requires browser WASM hydration."
+err_no_window = "Browser window is unavailable."
+err_navigator_credentials_create_failed = "Could not start credential creation."
+err_create_credential_rejected = "Credential creation was rejected."
+err_create_credential_invalid_response = "Credential creation returned an unexpected response."
+err_navigator_credentials_get_failed = "Could not start credential request."
+err_get_credential_rejected = "Credential request was rejected."
+err_get_credential_invalid_response = "Credential request returned an unexpected response."
+err_server_only = "This operation is server-only."
+
+back_to_account = "Back to account"
+
+origin_warning_title = "Passkey registration security note"
+origin_warning_body = "Passkey registration is strictly origin-bound. For this app, use http://localhost with the same host and port consistently (for example, http://localhost:3000), and avoid 127.0.0.1, which is often unreliable for WebAuthn in this setup."

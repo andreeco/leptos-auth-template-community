@@ -1,0 +1,8 @@
+title = "Logout"
+confirm = "Do you really want to log out?"
+cancel = "Cancel"
+logging_out = "Logging out..."
+
+error_internal = "Internal error"
+error_session = "Session error"
+error_csrf = "Security token validation failed. Refresh and try again."

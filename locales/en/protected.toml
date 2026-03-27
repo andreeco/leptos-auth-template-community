@@ -1,5 +1,0 @@
-title = "Protected Page"
-login_as = "You are logged in as:"
-button = "Add 21 + 21 (server)!"
-result = "Result from server:"
-not_authenticated = "Not authenticated"

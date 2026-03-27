@@ -1,141 +1,83 @@
-[package]
-name = "leptos-axum-login-try"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = [
+  "crates/app",
+  "crates/db",
+  "crates/migration",
+]
+resolver = "3"
 
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
+[workspace.dependencies]
+axum = { version = "0.8.0" }
+axum-login = { version = "0.18" }
+base64 = { version = "0.22" }
+chrono = { version = "0.4" }
+console_error_panic_hook = { version = "0.1" }
+db = { path = "crates/db" }
+http = { version = "1.4" }
 leptos = { version = "0.8.0", features = ["nightly"] }
-leptos_router = { version = "0.8.0", features = ["nightly"] }
-axum = { version = "0.8.0", optional = true }
-axum-login = { version = "0.18", optional = true }  # for axum-login
-tower-sessions = { version = "0.14", optional = true } # for axum-login
-tower-http = { version = "0.6", optional = true, features = ["trace", "limit", "set-header"] }
-tower_governor = { version = "0.8", optional = true }
-serde = { version = "1.0", features = ["derive"] }
-console_error_panic_hook = { version = "0.1", optional = true }
-leptos_axum = { version = "0.8.0", optional = true }
-leptos_meta = { version = "0.8.0" }
-tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
-wasm-bindgen = { version = "0.2.106", optional = true }
-# leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n.git", branch = "master" }
-# leptos_i18n_router = { git = "https://github.com/Baptistemontan/leptos_i18n.git", branch = "master", package = "leptos_i18n_router" }
+leptos_axum = { version = "0.8.0" }
 leptos_i18n = { version = "0.6" }
-leptos_i18n_router = { version = "0.6", package = "leptos_i18n_router" }
-rand = { version = "0.8", optional = true }
-thiserror =  { version = "2", optional = true }  # for axum-login
-http = {version = "1.4", optional = true }
-tower-cookies = {version = "0.11", optional = true }
-web-sys = { version = "0.3.85", optional = true}
-password-auth = { version = "1", optional = true }
-base64 = { version = "0.22", optional = true }
-subtle = { version = "2.6", optional = true }
-
-[build-dependencies]
-# leptos_i18n_build = { git = "https://github.com/Baptistemontan/leptos_i18n.git", branch = "master", package = "leptos_i18n_build" }
 leptos_i18n_build = { version = "0.6", package = "leptos_i18n_build" }
-[features]
-hydrate = [
-    "leptos/hydrate",
-    "dep:console_error_panic_hook",
-    "dep:wasm-bindgen",
-    "dep:web-sys",
+leptos_i18n_router = { version = "0.6", package = "leptos_i18n_router" }
+leptos_meta = { version = "0.8.0" }
+leptos_router = { version = "0.8.0", features = ["nightly"] }
+password-auth = { version = "1" }
+rand = { version = "0.8" }
+sea-orm = { version = "2.0.0-rc", default-features = false }
+sea-orm-migration = { version = "2.0.0-rc.37" }
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = { version = "0.6" }
+serde_json = { version = "1.0" }
+subtle = { version = "2.6" }
+thiserror = { version = "2" }
+tokio = { version = "1" }
+tower-cookies = { version = "0.11" }
+tower-http = { version = "0.6" }
+tower-sessions = { version = "0.14" }
+tower_governor = { version = "0.8" }
+url = { version = "2" }
+uuid = { version = "1" }
+wasm-bindgen = { version = "=0.2.114" }
+wasm-bindgen-futures = { version = "0.4" }
+webauthn-rs = { version = "0.5.4" }
+webauthn-rs-proto = { version = "0.5.4", default-features = false }
+web-sys = { version = "0.3.85" }
 
-    "leptos_i18n/hydrate",
-    "leptos_i18n_build/hydrate",
-]
-ssr = [
-    "dep:axum",
-    "dep:tokio",
-    "dep:leptos_axum",
-    "axum/macros",  # for axum-login
-    "dep:axum-login", # for axum-login
-    "dep:tower-sessions", # for axum-login
-    "dep:tower-http",
-    "dep:tower_governor",
-
-    "dep:thiserror", # for axum-login
-    "dep:http", # for axum-login
-    "dep:tower-cookies", # for axum-login
-    "leptos/ssr",
-    "leptos_meta/ssr",
-    "leptos_router/ssr",
-    "leptos_i18n/axum",
-    "leptos_i18n_build/ssr",
-    "dep:password-auth",
-    "dep:rand",
-    "dep:base64",
-    "dep:subtle",
-]
-
-# Defines a size-optimized profile for the WASM bundle in release mode
+# Keep the wasm release profile at workspace root.
 [profile.wasm-release]
 inherits = "release"
-opt-level = 'z'
+opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
 
-[package.metadata.leptos]
-# The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
-output-name = "leptos-axum-login-try"
+# cargo-leptos workspace config
+[[workspace.metadata.leptos]]
+name = "leptos-auth-template-community"
+bin-package = "leptos-auth-template-community"
+lib-package = "leptos-auth-template-community"
+bin-target = "leptos-auth-template-community"
+output-name = "leptos-auth-template-community"
 
-# The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup.
 site-root = "target/site"
-
-# The site-root relative folder where all compiled output (JS, WASM and CSS) is written
-# Defaults to pkg
 site-pkg-dir = "pkg"
 
-# [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
-style-file = "style/main.scss"
-# Assets source dir. All files found here will be copied and synchronized to site-root.
-# The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.
-#
-# Optional. Env: LEPTOS_ASSETS_DIR.
-assets-dir = "public"
+# Paths are relative to workspace root
+style-file = "crates/app/style/main.scss"
+assets-dir = "crates/app/public"
 
-# The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
 site-addr = "127.0.0.1:3000"
-
-# The port to use for automatic reload monitoring
 reload-port = 3001
-
-# [Optional] Command to use when running end2end tests. It will run in the end2end dir.
-#   [Windows] for non-WSL use "npx.cmd playwright test"
-#   This binary name can be checked in Powershell with Get-Command npx
 end2end-cmd = "npx playwright test"
-end2end-dir = "end2end"
+end2end-dir = "crates/app/end2end"
 
-#  The browserlist query used for optimizing the CSS.
 browserquery = "defaults"
-
-# The environment Leptos will run in, usually either "DEV" or "PROD"
 env = "DEV"
 
-# The features to use when compiling the bin target
-#
-# Optional. Can be over-ridden with the command line parameter --bin-features
 bin-features = ["ssr"]
-
-# If the --no-default-features flag should be used when compiling the bin target
-#
-# Optional. Defaults to false.
 bin-default-features = false
 
-# The features to use when compiling the lib target
-#
-# Optional. Can be over-ridden with the command line parameter --lib-features
 lib-features = ["hydrate"]
-
-# If the --no-default-features flag should be used when compiling the lib target
-#
-# Optional. Defaults to false.
 lib-default-features = false
 
-# The profile to use for the lib target when compiling for release
-#
-# Optional. Defaults to "release".
 lib-profile-release = "wasm-release"

@@ -1,0 +1,9 @@
+title = "Protected Page"
+login_as = "You are logged in as:"
+button = "Add 21 + 21 (server)!"
+result = "Result from server:"
+not_authenticated = "Not authenticated"
+
+guard_checking_login = "Checking login..."
+guard_checking_account_access = "Checking account access..."
+guard_checking_admin_access = "Checking admin access..."

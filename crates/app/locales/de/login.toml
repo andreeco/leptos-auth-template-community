@@ -1,0 +1,21 @@
+title = "Anmelden"
+
+username = "Benutzername"
+password = "Passwort"
+
+button = "Anmelden"
+button_pending = "Anmeldung läuft..."
+
+passkey_button = "Mit Passkey anmelden"
+passkey_button_pending = "Warten auf Passkey..."
+
+error_invalid_credentials = "Ungültige Anmeldedaten"
+error_missing_csrf = "CSRF-Token fehlt"
+error_security_token = "Sicherheits-Token ungültig. Bitte Seite neu laden und erneut versuchen."
+error_internal = "Interner Fehler"
+error_session = "Sitzungsfehler"
+error_session_refresh_failed = "Sitzung konnte nicht aktualisiert werden"
+error_password_reset_required = "Passwortänderung erforderlich. Bitte jetzt Ihr Passwort ändern."
+error_passkey_failed = "Passkey-Anmeldung fehlgeschlagen"
+error_passkey_session_refresh_failed = "Passkey-Anmeldung erfolgreich, aber die Sitzung konnte nicht aktualisiert werden"
+error_unsupported_target = "Anmeldung erfordert Hydration (wasm32)."

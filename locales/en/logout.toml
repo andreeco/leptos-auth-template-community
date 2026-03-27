@@ -1,6 +1,0 @@
-title = "Logout"
-confirm = "Do you really want to log out?"
-redirect_note = "You will be logged out..."
-login_again = "Login again"
-cancel = "Cancel"
-logging_out = "Logging out..."

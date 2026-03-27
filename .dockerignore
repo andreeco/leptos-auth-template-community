@@ -1,0 +1,55 @@
+# VCS metadata
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Rust/Cargo build artifacts
+target/
+**/target/
+debug/
+release/
+dist/
+out/
+
+# Local runtime/state files
+data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Editor/OS clutter
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Environment/secrets
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+
+# JS/test artifacts
+node_modules/
+**/node_modules/
+playwright-report/
+test-results/
+
+# Misc generated files
+**/*.rs.bk
+tree_output.txt
+
+# Not needed in Docker build context
+compose.yaml
+deploy.sh
+docs/
