@@ -16,6 +16,10 @@ This repository is intentionally focused on a clean, readable authentication bas
 
 - Session login/logout with `axum-login`
 - Auth UI state sync via server snapshot (`AuthState` / `auth_snapshot`)
+- Modular app layout with:
+  - `contexts.rs` for auth/csrf state + bootstrap helpers
+  - `features/` for domain logic (`auth`, `account`, `admin`)
+  - thin route/UI pages under `pages/`
 - Database-backed auth model (`users`, `roles`, `permissions`, join tables)
 - Protected server functions under `/api/secure/*`
 - CSRF validation on state-changing actions
@@ -95,6 +99,22 @@ SEED_ALLOW_ADMIN=1 cargo run --features ssr --bin seed_admin
 - Current session store is in-memory for simplicity and should not be used for production deployments.
 - For production, use a persistent session backend, HTTPS-only deployment, hardened cookie/security settings, and full operational monitoring.
 - Login throttling is intentionally basic in this template; consider per-account and per-IP lockout/rate-limiting policies for stronger protection.
+
+## Code layout (current)
+
+`crates/app/src` is organized as:
+
+- `app.rs`: app shell, router, route registration
+- `contexts.rs`: auth/csrf context types, server functions, and SSR/hydration bootstrap helpers
+- `features/`:
+  - `auth.rs`: auth backend/session-facing types and logic
+  - `account.rs`: account/profile/password/webauthn server/client logic
+  - `admin/`: admin API/types/users table logic
+- `pages/`: route components (kept thin)
+- `components/`: shared UI components
+- `i18n_utils.rs`: localized path helpers and alternate link generation
+
+This layout keeps route/view files simple and co-locates feature logic in `features/*`.
 
 ## Project docs
 

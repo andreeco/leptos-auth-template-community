@@ -9,6 +9,10 @@ Template focus:
 - SeaORM-backed auth data model
 - WebAuthn/passkeys for account security
 - Practical migration + entity generation workflow
+- App module layout:
+  - shared state/auth/csrf in `crates/app/src/contexts.rs`
+  - feature logic in `crates/app/src/features/*`
+  - route components in `crates/app/src/pages/*` (including `pages/admin.rs`)
 
 ---
 
@@ -127,7 +131,7 @@ The split migration set creates auth + passkey tables:
 
 ### 4.2 `axum-login` backend is DB-backed
 
-`Backend` authenticates via SeaORM queries:
+`Backend` (implemented in `crates/app/src/features/auth.rs`) authenticates via SeaORM queries:
 
 - find user by `username`
 - verify password hash
@@ -145,7 +149,18 @@ Session auth hash is derived from policy-relevant fields:
 
 This ensures policy changes can invalidate existing session auth state promptly.
 
-### 4.4 Generated entities source of truth
+### 4.4 Shared app contexts and paths
+
+Current module paths:
+
+- auth snapshot/state + CSRF wiring live in `crates/app/src/contexts.rs`
+- app/root wiring imports from `crate::contexts::*`
+- feature modules import from `crate::features::*`:
+  - auth: `crate::features::auth::*`
+  - account: `crate::features::account::*`
+  - admin API/types/table: `crate::features::admin::*`
+
+### 4.5 Generated entities source of truth
 
 Entities are generated into:
 
