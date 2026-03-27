@@ -21,25 +21,13 @@ mod ssr {
     use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
     use rand::rngs::OsRng;
     use rand::RngCore;
-    use std::fmt;
     use subtle::ConstantTimeEq;
     use tower_sessions::Session;
 
     const CSRF_KEY: &str = "csrf_token";
 
-    #[derive(Debug)]
-    struct CsrfError(&'static str);
-
-    impl fmt::Display for CsrfError {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            f.write_str(self.0)
-        }
-    }
-
-    impl std::error::Error for CsrfError {}
-
     fn err(msg: &'static str) -> ServerFnError {
-        ServerFnError::from(CsrfError(msg))
+        ServerFnError::new(msg)
     }
 
     fn new_token() -> String {
@@ -83,7 +71,7 @@ mod ssr {
         let Extension(session): Extension<Session> = leptos_axum::extract().await?;
         let token = get_or_create_csrf_token(&session)
             .await
-            .map_err(|_| err("CSRF session error"))?;
+            .map_err(|_| err("err_session"))?;
         Ok(CsrfToken { token })
     }
 
@@ -91,10 +79,10 @@ mod ssr {
         let Extension(session): Extension<Session> = leptos_axum::extract().await?;
         let ok = verify_csrf_token(&session, submitted)
             .await
-            .map_err(|_| err("CSRF session error"))?;
+            .map_err(|_| err("err_session"))?;
 
         if !ok {
-            return Err(err("CSRF validation failed"));
+            return Err(err("err_missing_csrf"));
         }
 
         Ok(())
@@ -104,14 +92,14 @@ mod ssr {
         let Extension(session): Extension<Session> = leptos_axum::extract().await?;
         let token = set_new_csrf_token(&session)
             .await
-            .map_err(|_| err("CSRF session error"))?;
+            .map_err(|_| err("err_session"))?;
         Ok(CsrfToken { token })
     }
 
     pub async fn get_or_create_for_session(session: &Session) -> Result<CsrfToken, ServerFnError> {
         let token = get_or_create_csrf_token(session)
             .await
-            .map_err(|_| err("CSRF session error"))?;
+            .map_err(|_| err("err_session"))?;
         Ok(CsrfToken { token })
     }
 }

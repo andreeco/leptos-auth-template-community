@@ -40,7 +40,9 @@ pub async fn logout_user(csrf: String) -> Result<(), ServerFnError> {
         return Err(ServerFnError::ServerError("error_csrf".into()));
     }
 
-    leptos_axum::redirect("/");
+    let locale: Locale = leptos_i18n::locale::resolve_locale();
+    let target = localized_path(locale, td_string!(locale, routes.home_path));
+    leptos_axum::redirect(&target);
     Ok(())
 }
 

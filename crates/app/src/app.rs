@@ -177,9 +177,6 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
-    // SSR-friendly one-shot auth bootstrap:
-    // initialize from a Resource so hydration doesn't trigger repeated
-    // client bootstrap calls.
     let (ready, set_ready) = signal(false);
     let (user, set_user) = signal::<Option<UserSummary>>(None);
     let (permissions, set_permissions) = signal::<HashSet<Permission>>(HashSet::new());
@@ -193,24 +190,34 @@ pub fn App() -> impl IntoView {
         set_permissions,
     });
 
-    let init_auth = Resource::new(|| (), |_| auth_snapshot());
-
-    Effect::new(move |_| {
-        if let Some(result) = init_auth.get() {
-            if let Ok(AuthSnapshot { user, permissions }) = result {
-                set_user.set(user);
-                set_permissions.set(permissions);
-            }
-            set_ready.set(true);
-        }
-    });
-
     let auth = expect_context::<AuthState>();
 
+    if let Some(AuthSnapshot { user: u, permissions: p }) = use_context::<AuthSnapshot>() {
+        auth.set_user.set(u);
+        auth.set_permissions.set(p);
+        auth.set_ready.set(true);
+    } else {
+        let init_auth = LocalResource::new(|| auth_snapshot());
+        Effect::new(move |_| {
+            if let Some(result) = init_auth.get() {
+                if let Ok(AuthSnapshot { user, permissions }) = result {
+                    auth.set_user.set(user);
+                    auth.set_permissions.set(permissions);
+                }
+                auth.set_ready.set(true);
+            }
+        });
+    }
 
 
-    let csrf_sig = RwSignal::new(None::<String>);
-    provide_context(CsrfContext(csrf_sig));
+
+    let csrf_sig = use_context::<CsrfContext>()
+        .map(|c| c.0)
+        .unwrap_or_else(|| {
+            let sig = RwSignal::new(None::<String>);
+            provide_context(CsrfContext(sig));
+            sig
+        });
 
     let csrf_refresh = RwSignal::new(());
     provide_context(csrf_refresh);
@@ -219,7 +226,11 @@ pub fn App() -> impl IntoView {
         csrf_refresh.get();
         crate::csrf::get_csrf_token()
     });
+
     Effect::new(move |_| {
+        if csrf_sig.get().is_some() {
+            return;
+        }
         if let Some(Ok(tok)) = csrf_res.get() {
             csrf_sig.set(Some(tok.token));
         }

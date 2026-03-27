@@ -44,13 +44,13 @@ pub async fn login_user(
         .map_err(|e| {
             eprintln!("session.get({LOGIN_LOCKED_UNTIL_KEY}) failed: {e}");
             response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-            ServerFnError::new("error_session")
+            ServerFnError::new("err_session")
         })?
         .unwrap_or(0);
 
     if locked_until > now_epoch {
         response.set_status(StatusCode::TOO_MANY_REQUESTS);
-        return Err(ServerFnError::ServerError("error_invalid_credentials".into()));
+        return Err(ServerFnError::new("err_rate_limited"));
     }
 
     let creds = Credentials { username, password };
@@ -60,31 +60,31 @@ pub async fn login_user(
             if let Err(e) = session.cycle_id().await {
                 eprintln!("session.cycle_id failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_session".into()));
+                return Err(ServerFnError::new("err_session"));
             }
 
             if let Err(e) = auth.login(&user).await {
                 eprintln!("auth.login failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_internal".into()));
+                return Err(ServerFnError::new("err_internal"));
             }
 
             if let Err(e) = session.insert(LOGIN_FAIL_COUNT_KEY, 0u32).await {
                 eprintln!("session.insert({LOGIN_FAIL_COUNT_KEY}) failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_session".into()));
+                return Err(ServerFnError::new("err_session"));
             }
 
             if let Err(e) = session.remove::<i64>(LOGIN_LOCKED_UNTIL_KEY).await {
                 eprintln!("session.remove({LOGIN_LOCKED_UNTIL_KEY}) failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_session".into()));
+                return Err(ServerFnError::new("err_session"));
             }
 
             if let Err(e) = crate::csrf::rotate_csrf_token().await {
                 eprintln!("rotate_csrf_token failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_security_token".into()));
+                return Err(ServerFnError::new("err_security_token"));
             }
 
             let redirect_target = {
@@ -107,7 +107,7 @@ pub async fn login_user(
                 .map_err(|e| {
                     eprintln!("session.get({LOGIN_FAIL_COUNT_KEY}) failed: {e}");
                     response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                    ServerFnError::new("error_session")
+                    ServerFnError::new("err_session")
                 })?
                 .unwrap_or(0);
 
@@ -118,66 +118,48 @@ pub async fn login_user(
                 if let Err(e) = session.insert(LOGIN_LOCKED_UNTIL_KEY, lock_until).await {
                     eprintln!("session.insert({LOGIN_LOCKED_UNTIL_KEY}) failed: {e}");
                     response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                    return Err(ServerFnError::ServerError("error_session".into()));
+                    return Err(ServerFnError::new("err_session"));
                 }
                 if let Err(e) = session.insert(LOGIN_FAIL_COUNT_KEY, 0u32).await {
                     eprintln!("session.insert({LOGIN_FAIL_COUNT_KEY}) failed: {e}");
                     response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                    return Err(ServerFnError::ServerError("error_session".into()));
+                    return Err(ServerFnError::new("err_session"));
                 }
 
                 response.set_status(StatusCode::TOO_MANY_REQUESTS);
-                return Err(ServerFnError::ServerError("error_invalid_credentials".into()));
+                return Err(ServerFnError::new("err_rate_limited"));
             }
 
             if let Err(e) = session.insert(LOGIN_FAIL_COUNT_KEY, new_fail_count).await {
                 eprintln!("session.insert({LOGIN_FAIL_COUNT_KEY}) failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-                return Err(ServerFnError::ServerError("error_session".into()));
+                return Err(ServerFnError::new("err_session"));
             }
 
             response.set_status(StatusCode::UNAUTHORIZED);
-            Err(ServerFnError::ServerError("error_invalid_credentials".into()))
+            Err(ServerFnError::new("err_invalid_credentials"))
         }
         Err(e) => {
             eprintln!("auth.authenticate failed: {e}");
             response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
-            Err(ServerFnError::ServerError("error_internal".into()))
+            Err(ServerFnError::new("err_internal"))
         }
     }
 }
 
 fn normalize_login_error_key(raw: &str) -> &'static str {
-    let lower = raw.to_lowercase();
-
-    if raw == "error_invalid_credentials" || lower.contains("invalid credentials") {
-        return "error_invalid_credentials";
+    match raw {
+        "err_invalid_credentials" => "err_invalid_credentials",
+        "err_missing_csrf" => "err_missing_csrf",
+        "err_security_token" => "err_security_token",
+        "err_session" => "err_session",
+        "err_session_refresh_failed" => "err_session_refresh_failed",
+        "err_rate_limited" => "err_rate_limited",
+        "err_passkey_failed" => "err_passkey_failed",
+        "err_passkey_session_refresh_failed" => "err_passkey_session_refresh_failed",
+        "err_unsupported_target" => "err_unsupported_target",
+        _ => "err_internal",
     }
-    if raw == "error_missing_csrf" || lower.contains("csrf") {
-        return "error_missing_csrf";
-    }
-    if raw == "error_security_token" || lower.contains("security token") {
-        return "error_security_token";
-    }
-    if raw == "error_session" || lower.contains("session error") {
-        return "error_session";
-    }
-    if raw == "error_session_refresh_failed" || lower.contains("session refresh failed") {
-        return "error_session_refresh_failed";
-    }
-    if raw == "error_passkey_failed" || lower.contains("passkey") {
-        return "error_passkey_failed";
-    }
-    if raw == "error_passkey_session_refresh_failed"
-        || lower.contains("passkey login succeeded but session refresh failed")
-    {
-        return "error_passkey_session_refresh_failed";
-    }
-    if raw == "error_unsupported_target" || lower.contains("requires hydrate") {
-        return "error_unsupported_target";
-    }
-
-    "error_internal"
 }
 
 #[component]
@@ -219,20 +201,21 @@ pub fn LoginPage() -> impl IntoView {
         move |raw: String| -> String {
             let locale = i18n.get_locale();
             match normalize_login_error_key(&raw) {
-                "error_invalid_credentials" => {
+                "err_invalid_credentials" => {
                     td_string!(locale, login.error_invalid_credentials).to_string()
                 }
-                "error_missing_csrf" => td_string!(locale, login.error_missing_csrf).to_string(),
-                "error_security_token" => td_string!(locale, login.error_security_token).to_string(),
-                "error_session" => td_string!(locale, login.error_session).to_string(),
-                "error_session_refresh_failed" => {
+                "err_missing_csrf" => td_string!(locale, login.error_missing_csrf).to_string(),
+                "err_security_token" => td_string!(locale, login.error_security_token).to_string(),
+                "err_session" => td_string!(locale, login.error_session).to_string(),
+                "err_session_refresh_failed" => {
                     td_string!(locale, login.error_session_refresh_failed).to_string()
                 }
-                "error_passkey_failed" => td_string!(locale, login.error_passkey_failed).to_string(),
-                "error_passkey_session_refresh_failed" => {
+                "err_rate_limited" => td_string!(locale, login.error_invalid_credentials).to_string(),
+                "err_passkey_failed" => td_string!(locale, login.error_passkey_failed).to_string(),
+                "err_passkey_session_refresh_failed" => {
                     td_string!(locale, login.error_passkey_session_refresh_failed).to_string()
                 }
-                "error_unsupported_target" => {
+                "err_unsupported_target" => {
                     td_string!(locale, login.error_unsupported_target).to_string()
                 }
                 _ => td_string!(locale, login.error_internal).to_string(),
@@ -326,7 +309,7 @@ pub fn LoginPage() -> impl IntoView {
                                 Err(_) => {
                                     auth.set_ready.set(true);
                                     passkey_error.set(Some(
-                                        "error_passkey_session_refresh_failed".to_string(),
+                                        "err_passkey_session_refresh_failed".to_string(),
                                     ));
                                 }
                             }
