@@ -9,7 +9,7 @@ pub mod not_found;
 pub mod privacy;
 pub mod protected;
 
-pub use account::{AccountPage, AccountPasswordPage, AccountWebauthnPage};
+pub use account::{AccountPage, AccountPasswordPage, AccountProfilePage, AccountWebauthnPage};
 pub use admin::AdminPage;
 pub use contact::Contact;
 pub use home::Home;

@@ -1,6 +1,6 @@
-use crate::account::account_change_password;
-use crate::auth_state::AuthState;
-use crate::csrf::CsrfContext;
+use crate::features::account::account_change_password;
+use crate::contexts::AuthState;
+use crate::contexts::CsrfContext;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::ev::SubmitEvent;
@@ -129,7 +129,7 @@ pub fn AccountPasswordPage() -> impl IntoView {
 
                         // Refresh auth snapshot so password-reset-required state clears immediately.
                         auth.set_ready.set(false);
-                        match crate::auth_state::auth_snapshot().await {
+                        match crate::contexts::auth_snapshot().await {
                             Ok(snap) => {
                                 auth.set_user.set(snap.user);
                                 auth.set_permissions.set(snap.permissions);

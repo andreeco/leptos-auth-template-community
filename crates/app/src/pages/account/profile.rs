@@ -1,6 +1,6 @@
-use crate::account::{account_profile_get, account_profile_update};
-use crate::auth_state::AuthState;
-use crate::csrf::CsrfContext;
+use crate::features::account::{account_profile_get, account_profile_update};
+use crate::contexts::AuthState;
+use crate::contexts::CsrfContext;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::ev::SubmitEvent;
@@ -145,7 +145,7 @@ pub fn AccountProfilePage() -> impl IntoView {
 
                         // Refresh auth snapshot so header/account state stays in sync.
                         auth.set_ready.set(false);
-                        match crate::auth_state::auth_snapshot().await {
+                        match crate::contexts::auth_snapshot().await {
                             Ok(snap) => {
                                 auth.set_user.set(snap.user);
                                 auth.set_permissions.set(snap.permissions);

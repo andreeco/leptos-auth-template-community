@@ -3,11 +3,11 @@ use std::collections::{HashMap, HashSet};
 
 use crate::i18n::*;
 
-use super::super::api::{
+use crate::features::admin::api::{
     admin_users_create, admin_users_delete, admin_users_search, admin_users_update,
     admin_users_update_with_password,
 };
-use super::super::types::AdminUserRow;
+use crate::features::admin::types::AdminUserRow;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 enum PendingKind {

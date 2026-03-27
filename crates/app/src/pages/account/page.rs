@@ -3,7 +3,7 @@
 //! This page is intentionally minimal and acts as a navigation hub for
 //! account-related features (profile, password, passkeys).
 
-use crate::auth_state::AuthState;
+use crate::contexts::AuthState;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::prelude::*;

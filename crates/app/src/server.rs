@@ -9,9 +9,8 @@ use http::header::{HeaderName, HeaderValue};
 use leptos::prelude::{provide_context, LeptosOptions};
 use leptos_axum::{handle_server_fns_with_context, LeptosRoutes};
 use leptos_auth_template_community::{
-    auth::{AuthSession, Backend},
-    auth_state::{AuthSnapshot, UserSummary},
-    csrf::{csrf_for_ssr, provide_csrf_context, CsrfToken},
+    contexts::{csrf_for_ssr, provide_csrf_context, AuthSnapshot, CsrfToken, UserSummary},
+    features::auth::{AuthSession, Backend},
     state::AppState,
 };
 use sea_orm::Database;

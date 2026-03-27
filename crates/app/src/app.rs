@@ -1,6 +1,6 @@
-use crate::auth_state::{auth_snapshot, AuthSnapshot, AuthState, Permission, UserSummary};
+use crate::contexts::{auth_snapshot, AuthSnapshot, AuthState, Permission, UserSummary};
 use crate::components::{footer::Footer, header::Header};
-use crate::csrf::CsrfContext;
+use crate::contexts::CsrfContext;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use crate::pages::{
@@ -212,7 +212,7 @@ pub fn App() -> impl IntoView {
 
     let csrf_res = LocalResource::new(move || {
         csrf_refresh.get();
-        crate::csrf::get_csrf_token()
+        crate::contexts::get_csrf_token()
     });
 
     Effect::new(move |_| {

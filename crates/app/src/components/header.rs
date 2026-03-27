@@ -1,4 +1,4 @@
-use crate::auth_state::AuthState;
+use crate::contexts::AuthState;
 use crate::components::lang_switch::LangSwitch;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;

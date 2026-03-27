@@ -5,7 +5,7 @@ use super::types::AdminUserRow;
 #[cfg(feature = "ssr")]
 mod ssr {
     use super::AdminUserRow;
-    use crate::auth::{AuthSession, Role};
+    use crate::features::auth::{AuthSession, Role};
     use crate::entities::{roles, user_roles, users};
     use crate::state::AppState;
     use axum::Extension;
@@ -17,7 +17,7 @@ mod ssr {
     };
     use std::collections::BTreeSet;
 
-    async fn require_admin() -> Result<crate::auth::User, ServerFnError> {
+    async fn require_admin() -> Result<crate::features::auth::User, ServerFnError> {
         let Extension(auth): Extension<AuthSession> = leptos_axum::extract().await?;
         let Some(user) = auth.user.clone() else {
             return Err(ServerFnError::new("err_not_authenticated"));
@@ -579,7 +579,7 @@ pub async fn admin_users_create(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_create(
             username,
             first_name,
@@ -623,7 +623,7 @@ pub async fn admin_users_update(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_update(
             id,
             username,
@@ -668,7 +668,7 @@ pub async fn admin_users_update_with_password(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_update_with_password(
             id,
             username,
@@ -704,7 +704,7 @@ pub async fn admin_users_update_with_password(
 pub async fn admin_users_delete(csrf: String, id: i64) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_delete(id).await
     }
     #[cfg(not(feature = "ssr"))]
@@ -721,7 +721,7 @@ pub async fn admin_users_force_password_reset(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_force_password_reset(id).await
     }
     #[cfg(not(feature = "ssr"))]
@@ -739,7 +739,7 @@ pub async fn admin_users_set_password_reset_required(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_set_password_reset_required(id, required).await
     }
     #[cfg(not(feature = "ssr"))]
@@ -757,7 +757,7 @@ pub async fn admin_users_set_enabled(
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
     {
-        crate::csrf::require_csrf(&csrf).await?;
+        crate::contexts::require_csrf(&csrf).await?;
         ssr::users_set_enabled(id, enabled).await
     }
     #[cfg(not(feature = "ssr"))]

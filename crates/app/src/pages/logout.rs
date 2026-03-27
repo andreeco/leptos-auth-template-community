@@ -1,4 +1,4 @@
-use crate::auth_state::AuthState;
+use crate::contexts::AuthState;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
@@ -9,9 +9,9 @@ use std::collections::HashSet;
 #[server(LogoutUser)]
 pub async fn logout_user(csrf: String) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
-    crate::csrf::require_csrf(&csrf).await?;
+    crate::contexts::require_csrf(&csrf).await?;
 
-    use crate::auth::AuthSession;
+    use crate::features::auth::AuthSession;
     use axum::Extension;
     use http::StatusCode;
     use leptos_axum::ResponseOptions;
@@ -34,7 +34,7 @@ pub async fn logout_user(csrf: String) -> Result<(), ServerFnError> {
         return Err(ServerFnError::ServerError("error_session".into()));
     }
 
-    if let Err(e) = crate::csrf::rotate_csrf_token().await {
+    if let Err(e) = crate::contexts::rotate_csrf_token().await {
         eprintln!("rotate_csrf_token failed on logout: {e}");
         response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
         return Err(ServerFnError::ServerError("error_csrf".into()));
@@ -72,7 +72,7 @@ pub fn LogoutPage() -> impl IntoView {
         }
     };
 
-    let csrf_sig = use_context::<crate::csrf::CsrfContext>()
+    let csrf_sig = use_context::<crate::contexts::CsrfContext>()
         .map(|c| c.0)
         .unwrap_or_else(|| RwSignal::new(None::<String>));
 

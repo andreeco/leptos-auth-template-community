@@ -1,11 +1,11 @@
-use crate::auth_state::AuthState;
+use crate::contexts::AuthState;
 use crate::i18n::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 
 #[server(prefix = "/api/secure")]
 pub async fn add_two(a: i32, b: i32) -> Result<i32, ServerFnError> {
-    use crate::auth::AuthSession;
+    use crate::features::auth::AuthSession;
     use axum::Extension;
 
     let Extension(auth): Extension<AuthSession> = leptos_axum::extract().await?;

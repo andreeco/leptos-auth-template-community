@@ -1,9 +1,9 @@
 use leptos::prelude::*;
-use crate::auth_state::AuthState;
-use crate::csrf::CsrfContext;
+use crate::contexts::AuthState;
+use crate::contexts::CsrfContext;
 use crate::i18n::*;
 
-use super::components::users_table::UsersTable;
+use crate::features::admin::users_table::UsersTable;
 
 #[component]
 pub fn AdminPage() -> impl IntoView {

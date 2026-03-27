@@ -112,7 +112,7 @@ pub use client::{create_credential, get_credential};
 #[cfg(feature = "ssr")]
 mod ssr {
     use super::*;
-    use crate::auth::AuthSession;
+    use crate::features::auth::AuthSession;
     use crate::entities::{users, webauthn_credentials};
     use crate::state::AppState;
     use axum::Extension;
@@ -150,7 +150,7 @@ mod ssr {
         Ok(sess)
     }
 
-    async fn require_user() -> Result<crate::auth::User, ServerFnError> {
+    async fn require_user() -> Result<crate::features::auth::User, ServerFnError> {
         let Extension(auth): Extension<AuthSession> = leptos_axum::extract().await?;
         auth.user
             .clone()
@@ -163,7 +163,7 @@ mod ssr {
         new_password: String,
         new_password_confirm: String,
     ) -> Result<(), ServerFnError> {
-        crate::csrf::require_csrf(csrf).await?;
+        crate::contexts::require_csrf(csrf).await?;
         let user = require_user().await?;
         let app_state = expect_context::<AppState>();
 
@@ -198,7 +198,7 @@ mod ssr {
             .await
             .map_err(|_e| ServerFnError::new("err_internal"))?;
 
-        let _ = crate::csrf::rotate_csrf_token().await;
+        let _ = crate::contexts::rotate_csrf_token().await;
         Ok(())
     }
 
@@ -229,7 +229,7 @@ mod ssr {
         last_name: String,
         email: String,
     ) -> Result<AccountProfileDto, ServerFnError> {
-        crate::csrf::require_csrf(csrf).await?;
+        crate::contexts::require_csrf(csrf).await?;
         let user = require_user().await?;
         let app_state = expect_context::<AppState>();
 
@@ -288,7 +288,7 @@ mod ssr {
             .await
             .map_err(|_e| ServerFnError::new("err_internal"))?;
 
-        let _ = crate::csrf::rotate_csrf_token().await;
+        let _ = crate::contexts::rotate_csrf_token().await;
 
         Ok(AccountProfileDto {
             username,
@@ -319,7 +319,7 @@ mod ssr {
     }
 
     pub async fn account_webauthn_delete(csrf: &str, id: i64) -> Result<(), ServerFnError> {
-        crate::csrf::require_csrf(csrf).await?;
+        crate::contexts::require_csrf(csrf).await?;
         let user = require_user().await?;
         let app_state = expect_context::<AppState>();
 
@@ -413,7 +413,7 @@ mod ssr {
         csrf: &str,
         rpkc: webauthn_rs_proto::attest::RegisterPublicKeyCredential,
     ) -> Result<(), ServerFnError> {
-        crate::csrf::require_csrf(csrf).await?;
+        crate::contexts::require_csrf(csrf).await?;
         let user = require_user().await?;
         let app_state = expect_context::<AppState>();
         let sess = session().await?;
@@ -457,7 +457,7 @@ mod ssr {
         .await
         .map_err(|_e| ServerFnError::new("err_internal"))?;
 
-        let _ = crate::csrf::rotate_csrf_token().await;
+        let _ = crate::contexts::rotate_csrf_token().await;
         Ok(())
     }
 
@@ -491,7 +491,7 @@ mod ssr {
         csrf: &str,
         pkc: webauthn_rs_proto::auth::PublicKeyCredential,
     ) -> Result<(), ServerFnError> {
-        crate::csrf::require_csrf(csrf).await?;
+        crate::contexts::require_csrf(csrf).await?;
 
         use axum_login::AuthnBackend;
         use http::StatusCode;
@@ -599,7 +599,7 @@ mod ssr {
             .await
             .map_err(|_e| ServerFnError::new("err_internal"))?;
 
-        let _ = crate::csrf::rotate_csrf_token().await;
+        let _ = crate::contexts::rotate_csrf_token().await;
         Ok(())
     }
 }

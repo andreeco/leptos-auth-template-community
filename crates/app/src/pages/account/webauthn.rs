@@ -1,9 +1,9 @@
-use crate::account::{
+use crate::features::account::{
     account_webauthn_delete, account_webauthn_list, account_webauthn_register_finish,
     account_webauthn_register_start, create_credential, WebauthnCredentialRow,
 };
-use crate::auth_state::AuthState;
-use crate::csrf::CsrfContext;
+use crate::contexts::AuthState;
+use crate::contexts::CsrfContext;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::prelude::*;

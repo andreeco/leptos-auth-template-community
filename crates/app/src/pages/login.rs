@@ -1,5 +1,5 @@
-use crate::account::{get_credential, webauthn_login_finish, webauthn_login_start};
-use crate::auth_state::AuthState;
+use crate::features::account::{get_credential, webauthn_login_finish, webauthn_login_start};
+use crate::contexts::AuthState;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
@@ -13,9 +13,9 @@ pub async fn login_user(
     csrf: String,
 ) -> Result<(), ServerFnError> {
     #[cfg(feature = "ssr")]
-    crate::csrf::require_csrf(&csrf).await?;
+    crate::contexts::require_csrf(&csrf).await?;
 
-    use crate::auth::{AuthSession, Credentials};
+    use crate::features::auth::{AuthSession, Credentials};
     use axum::Extension;
     use http::StatusCode;
     use leptos_axum::ResponseOptions;
@@ -81,7 +81,7 @@ pub async fn login_user(
                 return Err(ServerFnError::new("err_session"));
             }
 
-            if let Err(e) = crate::csrf::rotate_csrf_token().await {
+            if let Err(e) = crate::contexts::rotate_csrf_token().await {
                 eprintln!("rotate_csrf_token failed: {e}");
                 response.set_status(StatusCode::INTERNAL_SERVER_ERROR);
                 return Err(ServerFnError::new("err_security_token"));
@@ -170,7 +170,7 @@ pub fn LoginPage() -> impl IntoView {
     let navigate = use_navigate();
     let navigate_for_effect = navigate.clone();
 
-    let csrf_sig = use_context::<crate::csrf::CsrfContext>()
+    let csrf_sig = use_context::<crate::contexts::CsrfContext>()
         .map(|c| c.0)
         .unwrap_or_else(|| RwSignal::new(None::<String>));
 
@@ -234,7 +234,7 @@ pub fn LoginPage() -> impl IntoView {
             leptos::task::spawn_local({
                 let auth = auth;
                 async move {
-                    if let Ok(snap) = crate::auth_state::auth_snapshot().await {
+                    if let Ok(snap) = crate::contexts::auth_snapshot().await {
                         let requires_reset = snap
                             .user
                             .as_ref()
@@ -287,7 +287,7 @@ pub fn LoginPage() -> impl IntoView {
                             auth.set_ready.set(false);
                             csrf_refresh.set(());
 
-                            match crate::auth_state::auth_snapshot().await {
+                            match crate::contexts::auth_snapshot().await {
                                 Ok(snap) => {
                                     let requires_reset = snap
                                         .user
