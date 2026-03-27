@@ -192,32 +192,20 @@ pub fn App() -> impl IntoView {
 
     let auth = expect_context::<AuthState>();
 
-    if let Some(AuthSnapshot { user: u, permissions: p }) = use_context::<AuthSnapshot>() {
-        auth.set_user.set(u);
-        auth.set_permissions.set(p);
-        auth.set_ready.set(true);
-    } else {
-        let init_auth = LocalResource::new(|| auth_snapshot());
-        Effect::new(move |_| {
-            if let Some(result) = init_auth.get() {
-                if let Ok(AuthSnapshot { user, permissions }) = result {
-                    auth.set_user.set(user);
-                    auth.set_permissions.set(permissions);
-                }
-                auth.set_ready.set(true);
+    let init_auth = Resource::new(|| (), |_| auth_snapshot());
+
+    Effect::new(move |_| {
+        if let Some(result) = init_auth.get() {
+            if let Ok(AuthSnapshot { user, permissions }) = result {
+                auth.set_user.set(user);
+                auth.set_permissions.set(permissions);
             }
-        });
-    }
+            auth.set_ready.set(true);
+        }
+    });
 
-
-
-    let csrf_sig = use_context::<CsrfContext>()
-        .map(|c| c.0)
-        .unwrap_or_else(|| {
-            let sig = RwSignal::new(None::<String>);
-            provide_context(CsrfContext(sig));
-            sig
-        });
+    let csrf_sig = RwSignal::new(None::<String>);
+    provide_context(CsrfContext(csrf_sig));
 
     let csrf_refresh = RwSignal::new(());
     provide_context(csrf_refresh);
@@ -228,9 +216,6 @@ pub fn App() -> impl IntoView {
     });
 
     Effect::new(move |_| {
-        if csrf_sig.get().is_some() {
-            return;
-        }
         if let Some(Ok(tok)) = csrf_res.get() {
             csrf_sig.set(Some(tok.token));
         }
