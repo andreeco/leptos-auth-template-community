@@ -1,6 +1,5 @@
-use crate::contexts::{auth_snapshot, AuthSnapshot, AuthState, Permission, UserSummary};
+use crate::contexts::{AuthState, CsrfContext, Permission, UserSummary};
 use crate::components::{footer::Footer, header::Header};
-use crate::contexts::CsrfContext;
 use crate::i18n::*;
 use crate::i18n_utils::localized_path;
 use crate::pages::{
@@ -78,6 +77,9 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
     view! {
         <Routes fallback=|| view! { <NotFound/> }>
             <I18nRoute<Locale, _,_> view=|| view! {
+                <crate::contexts::ApplySsrAuthSnapshot/>
+                <crate::contexts::EnsureAuthSnapshot/>
+                <crate::contexts::EnsureCsrfToken/>
                 <Header />
                 <main>
                     <Outlet />
@@ -192,34 +194,11 @@ pub fn App() -> impl IntoView {
 
     let auth = expect_context::<AuthState>();
 
-    let init_auth = Resource::new(|| (), |_| auth_snapshot());
-
-    Effect::new(move |_| {
-        if let Some(result) = init_auth.get() {
-            if let Ok(AuthSnapshot { user, permissions }) = result {
-                auth.set_user.set(user);
-                auth.set_permissions.set(permissions);
-            }
-            auth.set_ready.set(true);
-        }
-    });
-
     let csrf_sig = RwSignal::new(None::<String>);
     provide_context(CsrfContext(csrf_sig));
 
     let csrf_refresh = RwSignal::new(());
     provide_context(csrf_refresh);
-
-    let csrf_res = LocalResource::new(move || {
-        csrf_refresh.get();
-        crate::contexts::get_csrf_token()
-    });
-
-    Effect::new(move |_| {
-        if let Some(Ok(tok)) = csrf_res.get() {
-            csrf_sig.set(Some(tok.token));
-        }
-    });
 
     view! {
         <I18nContextProvider>

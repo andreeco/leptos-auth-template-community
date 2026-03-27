@@ -85,6 +85,109 @@ pub async fn auth_snapshot() -> Result<AuthSnapshot, ServerFnError> {
     Ok(AuthSnapshot { user, permissions })
 }
 
+#[component]
+pub fn ApplySsrAuthSnapshot() -> impl IntoView {
+    let auth = expect_context::<AuthState>();
+    let snap = use_context::<AuthSnapshot>();
+    let applied = RwSignal::new(false);
+
+    Effect::new(move |_| {
+        if applied.get() {
+            return;
+        }
+        let Some(AuthSnapshot { user, permissions }) = snap.clone() else {
+            return;
+        };
+
+        auth.set_user.set(user);
+        auth.set_permissions.set(permissions);
+        auth.set_ready.set(true);
+        applied.set(true);
+    });
+
+    ()
+}
+
+#[component]
+pub fn EnsureAuthSnapshot() -> impl IntoView {
+    let auth = expect_context::<AuthState>();
+    let snap = use_context::<AuthSnapshot>();
+    let snap_for_trigger = snap.clone();
+    let snap_for_effect = snap.clone();
+
+    let res = Resource::new(
+        move || snap_for_trigger.is_none() && !auth.ready.get(),
+        move |need| async move {
+            if need {
+                Some(auth_snapshot().await)
+            } else {
+                None
+            }
+        },
+    );
+
+    Effect::new(move |_| {
+        if snap_for_effect.is_some() {
+            return;
+        }
+
+        if let Some(Some(Ok(AuthSnapshot { user, permissions }))) = res.get() {
+            auth.set_user.set(user);
+            auth.set_permissions.set(permissions);
+            auth.set_ready.set(true);
+        }
+    });
+
+    ()
+}
+
+#[component]
+pub fn EnsureCsrfToken() -> impl IntoView {
+    let ctx = expect_context::<CsrfContext>().0;
+    let refresh = expect_context::<RwSignal<()>>();
+    let ssr_tok = use_context::<CsrfToken>();
+
+    let applied_ssr = RwSignal::new(false);
+
+    Effect::new(move |_| {
+        if applied_ssr.get() {
+            return;
+        }
+
+        if let Some(tok) = ssr_tok.clone() {
+            if ctx.get().is_none() && !tok.token.is_empty() {
+                ctx.set(Some(tok.token));
+            }
+        }
+
+        applied_ssr.set(true);
+    });
+
+    let first_pass = RwSignal::new(true);
+    let res = LocalResource::new(move || {
+        refresh.get();
+
+        let skip_first_fetch = first_pass.get_untracked() && ctx.get_untracked().is_some();
+        first_pass.set(false);
+
+        async move {
+            if skip_first_fetch {
+                None
+            } else {
+                Some(crate::contexts::get_csrf_token().await)
+            }
+        }
+    });
+
+    Effect::new(move |_| {
+        if let Some(Some(Ok(tok))) = res.get() {
+            ctx.set(Some(tok.token));
+        }
+    });
+
+    ()
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CsrfToken {
     pub token: String,
