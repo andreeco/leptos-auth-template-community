@@ -2,7 +2,7 @@ use crate::auth_state::{auth_snapshot, AuthSnapshot, AuthState, Permission, User
 use crate::components::{footer::Footer, header::Header};
 use crate::csrf::CsrfContext;
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use crate::pages::{
     account::{AccountPage, AccountPasswordPage, AccountProfilePage, AccountWebauthnPage},
     admin::AdminPage, contact::Contact, home::Home, imprint::Imprint, login::LoginPage,
@@ -19,7 +19,7 @@ use std::collections::HashSet;
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <!DOCTYPE html>
-        <html lang="en">
+        <html>
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -56,13 +56,13 @@ fn GuardCheckingAdminAccessFallback() -> impl IntoView {
 fn AppRoutes(auth: AuthState) -> impl IntoView {
     let i18n = use_i18n();
     let login_redirect_path = Signal::derive(move || {
-        lp(
+        localized_path(
             i18n.get_locale(),
             td_string!(i18n.get_locale(), routes.login_path),
         )
     });
     let account_password_redirect_path = Signal::derive(move || {
-        lp(
+        localized_path(
             i18n.get_locale(),
             td_string!(i18n.get_locale(), routes.account_password_path),
         )

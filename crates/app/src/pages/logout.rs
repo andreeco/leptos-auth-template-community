@@ -1,6 +1,6 @@
 use crate::auth_state::AuthState;
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
 use leptos_router::components::A;
 use leptos_router::hooks::use_navigate;
@@ -90,7 +90,7 @@ pub fn LogoutPage() -> impl IntoView {
             csrf_refresh.set(());
 
             let locale = i18n.get_locale_untracked();
-            let login_path = lp(locale, td_string!(locale, routes.login_path));
+            let login_path = localized_path(locale, td_string!(locale, routes.login_path));
             navigate(&login_path, Default::default());
         }
     });
@@ -114,7 +114,7 @@ pub fn LogoutPage() -> impl IntoView {
             </ActionForm>
 
             <p>
-                <A href=move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.home_path))>
+                <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.home_path))>
                     {t!(i18n, logout.cancel)}
                 </A>
             </p>

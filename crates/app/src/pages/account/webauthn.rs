@@ -5,7 +5,7 @@ use crate::account::{
 use crate::auth_state::AuthState;
 use crate::csrf::CsrfContext;
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 use leptos_router::components::A;
@@ -217,7 +217,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                     fallback=move || view! {
                         <p>{t!(i18n, account_webauthn.need_logged_in_manage_passkeys)}</p>
                         <p>
-                            <A href=move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path))>
+                            <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path))>
                                 {t!(i18n, account_webauthn.go_to_login)}
                             </A>
                         </p>
@@ -405,7 +405,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                     </Show>
 
                     <p style="margin-top: 1rem;">
-                        <A href=move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.account_path))>
+                        <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.account_path))>
                             {t!(i18n, account_webauthn.back_to_account)}
                         </A>
                     </p>

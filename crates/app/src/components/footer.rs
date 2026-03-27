@@ -1,5 +1,5 @@
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
 use leptos_router::components::A;
 
@@ -11,11 +11,11 @@ pub fn Footer() -> impl IntoView {
             <hr/>
             <p>
                 {t!(i18n, footer.copyright)}
-                <A href=move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.imprint_path))>
+                <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.imprint_path))>
                     {t!(i18n, footer.imprint)}
                 </A>
                 " | "
-                <A href=move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.privacy_path))>
+                <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.privacy_path))>
                     {t!(i18n, footer.privacy)}
                 </A>
             </p>

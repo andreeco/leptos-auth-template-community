@@ -30,34 +30,56 @@ pub fn locale_label(locale: Locale) -> &'static str {
     }
 }
 
-/// Normalize an href to an absolute in-app path while preserving external/special links.
-///
-/// - `""` -> `"/"`
-/// - `"contact"` -> `"/contact"`
-/// - `"/contact"` -> `"/contact"`
-/// - `http://...`, `https://...`, `mailto:...`, `tel:...`, `#...` are returned unchanged.
 #[inline]
-pub fn lp(_locale: Locale, href: &str) -> String {
+pub fn is_external_or_special(href: &str) -> bool {
     let h = href.trim();
-
-    if h.is_empty() {
-        return "/".to_string();
-    }
-
-    if h.starts_with("http://")
+    h.starts_with("http://")
         || h.starts_with("https://")
         || h.starts_with("mailto:")
         || h.starts_with("tel:")
         || h.starts_with('#')
-    {
+}
+
+#[inline]
+pub fn normalize_internal_path(href: &str) -> String {
+    let h = href.trim();
+    if h.is_empty() {
+        return "/".to_string();
+    }
+
+    if h.starts_with('/') {
+        h.to_string()
+    } else {
+        format!("/{h}")
+    }
+}
+
+#[inline]
+pub fn default_locale() -> Locale {
+    Locale::de
+}
+
+#[inline]
+pub fn locale_prefix(locale: Locale) -> &'static str {
+    locale.as_str()
+}
+
+#[inline]
+pub fn localized_path(locale: Locale, href: &str) -> String {
+    let h = href.trim();
+
+    if is_external_or_special(h) {
         return h.to_string();
     }
 
-    let p = h.trim_start_matches('/');
-    if p.is_empty() {
-        "/".to_string()
+    let p = normalize_internal_path(h);
+
+    if locale == default_locale() {
+        p
+    } else if p == "/" {
+        format!("/{}/", locale_prefix(locale))
     } else {
-        format!("/{}", p)
+        format!("/{locale}{p}", locale = locale_prefix(locale))
     }
 }
 
@@ -66,18 +88,13 @@ pub fn lp(_locale: Locale, href: &str) -> String {
 /// If `href` is already external (`http`, `https`, `mailto`, `tel`, `#`), it is returned unchanged.
 #[inline]
 pub fn absolute_url(base_url: &str, locale: Locale, href: &str) -> String {
-    let normalized = lp(locale, href);
-
-    if normalized.starts_with("http://")
-        || normalized.starts_with("https://")
-        || normalized.starts_with("mailto:")
-        || normalized.starts_with("tel:")
-        || normalized.starts_with('#')
-    {
-        return normalized;
+    if is_external_or_special(href) {
+        return href.trim().to_string();
     }
 
+    let normalized = localized_path(locale, href);
     let base = base_url.trim().trim_end_matches('/');
+
     if base.is_empty() {
         normalized
     } else {
@@ -124,7 +141,7 @@ impl AlternateRoute {
 /// Render `<link rel="alternate" hreflang="...">` tags for all locales.
 ///
 /// - If `base_url` is provided (or `APP_BASE_URL` exists), links are absolute.
-/// - Otherwise links are rendered as normalized app-relative paths.
+/// - Otherwise links are rendered as localized app-relative paths.
 #[component]
 pub fn AlternateLinks(
     route: AlternateRoute,
@@ -138,7 +155,7 @@ pub fn AlternateLinks(
         .map(|locale| {
             let href = match &resolved_base {
                 Some(base) => absolute_url(base, locale, route.localized_path(locale)),
-                None => lp(locale, route.localized_path(locale)),
+                None => localized_path(locale, route.localized_path(locale)),
             };
 
             view! {

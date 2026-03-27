@@ -1,7 +1,7 @@
 use crate::account::{get_credential, webauthn_login_finish, webauthn_login_start};
 use crate::auth_state::AuthState;
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use leptos::prelude::*;
 use leptos_router::components::A;
 use leptos_router::hooks::use_navigate;
@@ -91,9 +91,9 @@ pub async fn login_user(
                 let locale: Locale = leptos_i18n::locale::resolve_locale();
 
                 if user.password_reset_required {
-                    lp(locale, td_string!(locale, routes.account_password_path))
+                    localized_path(locale, td_string!(locale, routes.account_password_path))
                 } else {
-                    lp(locale, td_string!(locale, routes.protected_path))
+                    localized_path(locale, td_string!(locale, routes.protected_path))
                 }
             };
 
@@ -198,14 +198,14 @@ pub fn LoginPage() -> impl IntoView {
     let csrf_refresh = expect_context::<RwSignal<()>>();
     let protected_path = move || {
         let locale = i18n.get_locale_untracked();
-        lp(
+        localized_path(
             locale,
             td_string!(locale, routes.protected_path),
         )
     };
     let account_password_path = move || {
         let locale = i18n.get_locale_untracked();
-        lp(
+        localized_path(
             locale,
             td_string!(locale, routes.account_password_path),
         )

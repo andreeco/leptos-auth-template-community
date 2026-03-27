@@ -2,7 +2,7 @@ use crate::account::{account_profile_get, account_profile_update};
 use crate::auth_state::AuthState;
 use crate::csrf::CsrfContext;
 use crate::i18n::*;
-use crate::i18n_utils::lp;
+use crate::i18n_utils::localized_path;
 use leptos::ev::SubmitEvent;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
@@ -19,8 +19,14 @@ pub fn AccountProfilePage() -> impl IntoView {
     let csrf_ready = move || csrf_sig.read().is_some();
     let csrf_refresh = use_context::<RwSignal<()>>().unwrap_or_else(|| RwSignal::new(()));
 
-    let href_login = move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path));
-    let href_account = move || lp(i18n.get_locale(), td_string!(i18n.get_locale(), routes.account_path));
+    let href_login =
+        move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path));
+    let href_account = move || {
+        localized_path(
+            i18n.get_locale(),
+            td_string!(i18n.get_locale(), routes.account_path),
+        )
+    };
 
     let username = RwSignal::new(String::new());
     let first_name = RwSignal::new(String::new());
