@@ -6,10 +6,10 @@ use leptos_meta::{Link as MetaLink, Title};
 #[component]
 pub fn Contact() -> impl IntoView {
     let i18n = use_i18n();
-    let contact_title = td_string!(i18n.get_locale_untracked(), contact.title).to_string();
+    let contact_title = move || td_string!(i18n.get_locale(), contact.title).to_string();
 
     view! {
-        <Title text={contact_title} />
+        <Title text=contact_title />
         <MetaLink rel="alternate" hreflang="de" href="https://leptos-auth-template-community.de/kontakt"/>
         <MetaLink rel="alternate" hreflang="en" href="https://leptos-auth-template-community.de/en/contact"/>
         <h1>{t!(i18n, contact.title)}</h1>
