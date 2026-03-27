@@ -88,28 +88,21 @@ pub async fn login_user(
             }
 
             let redirect_target = {
-                let protected_de = format!("/de/{}", td_string!(Locale::de, routes.protected_path));
-                let protected_en = format!("/en/{}", td_string!(Locale::en, routes.protected_path));
-                let password_de =
-                    format!("/de/{}", td_string!(Locale::de, routes.account_password_path));
-                let password_en =
-                    format!("/en/{}", td_string!(Locale::en, routes.account_password_path));
-
                 let referer = headers
                     .get(http::header::REFERER)
                     .and_then(|v| v.to_str().ok())
                     .unwrap_or_default();
 
-                if user.password_reset_required {
-                    if referer.contains("/de/") {
-                        password_de
-                    } else {
-                        password_en
-                    }
-                } else if referer.contains("/de/") {
-                    protected_de
+                let locale = if referer.contains("/de/") {
+                    Locale::de
                 } else {
-                    protected_en
+                    Locale::en
+                };
+
+                if user.password_reset_required {
+                    lp(locale, td_string!(locale, routes.account_password_path))
+                } else {
+                    lp(locale, td_string!(locale, routes.protected_path))
                 }
             };
 
