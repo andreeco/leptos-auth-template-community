@@ -1,11 +1,10 @@
 use crate::i18n::Locale;
-use leptos_i18n::Locale as LocaleTrait;
 
-pub fn lp(locale: Locale, href: &str) -> String {
+pub fn lp(_locale: Locale, href: &str) -> String {
     let h = href.trim();
 
     if h.is_empty() {
-        return format!("/{}/", locale.as_str());
+        return "/".to_string();
     }
 
     if h.starts_with("http://")
@@ -20,8 +19,8 @@ pub fn lp(locale: Locale, href: &str) -> String {
     let p = h.trim_start_matches('/');
 
     if p.is_empty() {
-        format!("/{}/", locale.as_str())
+        "/".to_string()
     } else {
-        format!("/{}/{}", locale.as_str(), p)
+        format!("/{}", p)
     }
 }
