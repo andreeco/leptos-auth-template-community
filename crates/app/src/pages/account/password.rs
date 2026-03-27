@@ -2,7 +2,7 @@ use crate::account::account_change_password;
 use crate::auth_state::AuthState;
 use crate::csrf::CsrfContext;
 use crate::i18n::*;
-use crate::i18n_paths::lp;
+use crate::i18n_utils::lp;
 use leptos::ev::SubmitEvent;
 use leptos::prelude::*;
 use leptos::task::spawn_local;

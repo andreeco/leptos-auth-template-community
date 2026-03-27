@@ -1,6 +1,6 @@
 use crate::auth_state::AuthState;
 use crate::i18n::*;
-use crate::i18n_paths::lp;
+use crate::i18n_utils::lp;
 use leptos::prelude::*;
 use leptos_router::components::A;
 use leptos_router::hooks::use_navigate;

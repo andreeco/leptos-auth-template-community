@@ -1,7 +1,8 @@
 use crate::components::contact_button::ContactButton;
 use crate::i18n::*;
+use crate::i18n_utils::{AlternateLinks, AlternateRoute};
 use leptos::prelude::*;
-use leptos_meta::{Link as MetaLink, Title};
+use leptos_meta::Title;
 
 #[component]
 pub fn Contact() -> impl IntoView {
@@ -10,8 +11,7 @@ pub fn Contact() -> impl IntoView {
 
     view! {
         <Title text=contact_title />
-        <MetaLink rel="alternate" hreflang="de" href="https://leptos-auth-template-community.de/kontakt"/>
-        <MetaLink rel="alternate" hreflang="en" href="https://leptos-auth-template-community.de/en/contact"/>
+        <AlternateLinks route=AlternateRoute::Contact />
         <h1>{t!(i18n, contact.title)}</h1>
         <p>
             {t!(i18n, contact.email)}

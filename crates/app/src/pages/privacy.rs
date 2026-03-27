@@ -1,6 +1,7 @@
 use crate::i18n::*;
+use crate::i18n_utils::{AlternateLinks, AlternateRoute};
 use leptos::prelude::*;
-use leptos_meta::{Link as MetaLink, Title};
+use leptos_meta::Title;
 
 #[component]
 pub fn Privacy() -> impl IntoView {
@@ -9,8 +10,7 @@ pub fn Privacy() -> impl IntoView {
 
     view! {
         <Title text=privacy_title />
-        <MetaLink rel="alternate" hreflang="de" href="https://leptos-auth-template-community.de/datenschutzerklaerung"/>
-        <MetaLink rel="alternate" hreflang="en" href="https://leptos-auth-template-community.de/en/privacy"/>
+        <AlternateLinks route=AlternateRoute::Privacy />
         <h1>{t!(i18n, privacy.heading)}</h1>
     }
 }

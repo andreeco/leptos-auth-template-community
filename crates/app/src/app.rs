@@ -2,7 +2,7 @@ use crate::auth_state::{auth_snapshot, AuthSnapshot, AuthState, Permission, User
 use crate::components::{footer::Footer, header::Header};
 use crate::csrf::CsrfContext;
 use crate::i18n::*;
-use crate::i18n_paths::lp;
+use crate::i18n_utils::lp;
 use crate::pages::{
     account::{AccountPage, AccountPasswordPage, AccountProfilePage, AccountWebauthnPage},
     admin::AdminPage, contact::Contact, home::Home, imprint::Imprint, login::LoginPage,

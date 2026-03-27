@@ -9,7 +9,7 @@ pub mod account;
 pub mod auth;
 pub mod auth_state;
 pub mod csrf;
-pub mod i18n_paths;
+pub mod i18n_utils;
 pub mod state;
 
 #[cfg(feature = "ssr")]
