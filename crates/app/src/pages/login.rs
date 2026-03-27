@@ -16,7 +16,7 @@ pub async fn login_user(
     crate::csrf::require_csrf(&csrf).await?;
 
     use crate::auth::{AuthSession, Credentials};
-    use axum::{http::HeaderMap, Extension};
+    use axum::Extension;
     use http::StatusCode;
     use leptos_axum::ResponseOptions;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -31,7 +31,7 @@ pub async fn login_user(
 
     let Extension(mut auth): Extension<AuthSession> = leptos_axum::extract().await?;
     let Extension(session): Extension<Session> = leptos_axum::extract().await?;
-    let headers: HeaderMap = leptos_axum::extract().await?;
+
 
     let now_epoch = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -88,16 +88,7 @@ pub async fn login_user(
             }
 
             let redirect_target = {
-                let referer = headers
-                    .get(http::header::REFERER)
-                    .and_then(|v| v.to_str().ok())
-                    .unwrap_or_default();
-
-                let locale = if referer.contains("/de/") {
-                    Locale::de
-                } else {
-                    Locale::en
-                };
+                let locale: Locale = leptos_i18n::locale::resolve_locale();
 
                 if user.password_reset_required {
                     lp(locale, td_string!(locale, routes.account_password_path))
