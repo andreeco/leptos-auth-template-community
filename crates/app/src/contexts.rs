@@ -112,29 +112,38 @@ pub fn ApplySsrAuthSnapshot() -> impl IntoView {
 pub fn EnsureAuthSnapshot() -> impl IntoView {
     let auth = expect_context::<AuthState>();
     let snap = use_context::<AuthSnapshot>();
-    let snap_for_trigger = snap.clone();
+    let snap_for_load = snap.clone();
     let snap_for_effect = snap.clone();
 
-    let res = Resource::new(
-        move || snap_for_trigger.is_none() && !auth.ready.get(),
-        move |need| async move {
-            if need {
-                Some(auth_snapshot().await)
-            } else {
+    let res = LocalResource::new(move || {
+        let snap = snap_for_load.clone();
+        async move {
+            if snap.is_some() {
                 None
+            } else {
+                Some(auth_snapshot().await)
             }
-        },
-    );
+        }
+    });
 
     Effect::new(move |_| {
         if snap_for_effect.is_some() {
+            if !auth.ready.get() {
+                auth.set_ready.set(true);
+            }
             return;
         }
 
-        if let Some(Some(Ok(AuthSnapshot { user, permissions }))) = res.get() {
-            auth.set_user.set(user);
-            auth.set_permissions.set(permissions);
-            auth.set_ready.set(true);
+        match res.get() {
+            Some(Some(Ok(AuthSnapshot { user, permissions }))) => {
+                auth.set_user.set(user);
+                auth.set_permissions.set(permissions);
+                auth.set_ready.set(true);
+            }
+            Some(Some(Err(_))) => {
+                auth.set_ready.set(true);
+            }
+            _ => {}
         }
     });
 
