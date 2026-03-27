@@ -1,7 +1,4 @@
-// Session invalidation notes:
-// password hash, account status, and password-reset-required are included in session auth hashing.
-// Role/permission changes can still remain active for existing sessions unless you also include an authz version/hash
-// in session_auth_hash() and bump it whenever role/permission assignments change.
+
 
 use leptos::prelude::*;
 use std::collections::HashSet;
