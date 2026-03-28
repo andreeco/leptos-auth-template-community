@@ -166,6 +166,10 @@ fn normalize_login_error_key(raw: &str) -> &'static str {
 pub fn LoginPage() -> impl IntoView {
     let i18n = use_i18n();
     let locale_now = Signal::derive(move || i18n.get_locale());
+    let locale = i18n.get_locale_untracked();
+    let login_title = td_string!(locale, login.title);
+    let reset_required_text = td_string!(locale, login.error_password_reset_required);
+    let change_password_text = td_string!(locale, account.submit_change_password);
     let login_action = ServerAction::<LoginUser>::new();
     let auth = expect_context::<AuthState>();
     let navigate = use_navigate();
@@ -327,17 +331,17 @@ pub fn LoginPage() -> impl IntoView {
     };
 
     view! {
-        <h1>{t!(i18n, login.title)}</h1>
+        <h1>{login_title}</h1>
 
         <Show when=move || auth.ready.get() && auth.requires_password_reset()>
             <div class="error" style="margin-bottom: 0.5rem;">
-                {t!(i18n, login.error_password_reset_required)}
+                {reset_required_text}
             </div>
             <A
                 href=move || account_password_path()
                 attr:style="display:inline-block; margin-bottom: 0.75rem;"
             >
-                {t!(i18n, account.submit_change_password)}
+                {change_password_text}
             </A>
         </Show>
 
