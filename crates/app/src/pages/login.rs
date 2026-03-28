@@ -165,6 +165,7 @@ fn normalize_login_error_key(raw: &str) -> &'static str {
 #[component]
 pub fn LoginPage() -> impl IntoView {
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
     let login_action = ServerAction::<LoginUser>::new();
     let auth = expect_context::<AuthState>();
     let navigate = use_navigate();
@@ -357,7 +358,7 @@ pub fn LoginPage() -> impl IntoView {
                 <input
                     type="text"
                     name="username"
-                    placeholder=move || td_string!(i18n.get_locale(), login.username).to_string()
+                    placeholder=move || td_string!(locale_now.get(), login.username).to_string()
 
                 />
             </label>
@@ -367,7 +368,7 @@ pub fn LoginPage() -> impl IntoView {
                 <input
                     type="password"
                     name="password"
-                    placeholder=move || td_string!(i18n.get_locale(), login.password).to_string()
+                    placeholder=move || td_string!(locale_now.get(), login.password).to_string()
 
                 />
             </label>
