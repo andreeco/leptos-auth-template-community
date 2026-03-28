@@ -52,11 +52,12 @@ pub fn LogoutPage() -> impl IntoView {
     let auth = expect_context::<AuthState>();
     let navigate = use_navigate();
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
 
     let localize_error = {
         let i18n = i18n.clone();
         move |raw: String| -> String {
-            let locale = i18n.get_locale();
+            let locale = i18n.get_locale_untracked();
             match raw.as_str() {
                 "error_internal" | "Internal error" => {
                     td_string!(locale, logout.error_internal).to_string()
@@ -116,7 +117,7 @@ pub fn LogoutPage() -> impl IntoView {
             </ActionForm>
 
             <p>
-                <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.home_path))>
+                <A href=move || localized_path(locale_now.get(), td_string!(locale_now.get(), routes.home_path))>
                     {t!(i18n, logout.cancel)}
                 </A>
             </p>

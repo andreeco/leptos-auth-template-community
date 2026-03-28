@@ -78,6 +78,7 @@ fn localize_webauthn_error(locale: Locale, raw: &str) -> String {
 #[component]
 pub fn AccountWebauthnPage() -> impl IntoView {
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
     let auth = expect_context::<AuthState>();
 
     let csrf_sig = use_context::<CsrfContext>()
@@ -114,7 +115,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
 
             let Some(csrf) = csrf_sig.get_untracked() else {
                 message.set(Some(
-                    td_string!(i18n.get_locale(), account_webauthn.msg_missing_csrf).to_string(),
+                    td_string!(i18n.get_locale_untracked(), account_webauthn.msg_missing_csrf).to_string(),
                 ));
                 return;
             };
@@ -122,7 +123,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
             let name = draft_name.get_untracked().trim().to_string();
             if name.is_empty() {
                 message.set(Some(
-                    td_string!(i18n.get_locale(), account_webauthn.msg_passkey_name_required)
+                    td_string!(i18n.get_locale_untracked(), account_webauthn.msg_passkey_name_required)
                         .to_string(),
                 ));
                 return;
@@ -131,7 +132,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
             pending_register.set(true);
             message.set(None);
 
-            let locale = i18n.get_locale();
+            let locale = i18n.get_locale_untracked();
             spawn_local(async move {
                 let result = async {
                     let ccr = account_webauthn_register_start(name).await?;
@@ -173,7 +174,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
 
             let Some(csrf) = csrf_sig.get_untracked() else {
                 message.set(Some(
-                    td_string!(i18n.get_locale(), account_webauthn.msg_missing_csrf).to_string(),
+                    td_string!(i18n.get_locale_untracked(), account_webauthn.msg_missing_csrf).to_string(),
                 ));
                 return;
             };
@@ -181,7 +182,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
             pending_delete_id.set(Some(id));
             message.set(None);
 
-            let locale = i18n.get_locale();
+            let locale = i18n.get_locale_untracked();
             spawn_local(async move {
                 match account_webauthn_delete(csrf, id).await {
                     Ok(()) => {
@@ -217,7 +218,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                     fallback=move || view! {
                         <p>{t!(i18n, account_webauthn.need_logged_in_manage_passkeys)}</p>
                         <p>
-                            <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path))>
+                            <A href=move || localized_path(locale_now.get(), td_string!(locale_now.get(), routes.login_path))>
                                 {t!(i18n, account_webauthn.go_to_login)}
                             </A>
                         </p>
@@ -229,7 +230,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                         <strong>
                             {move || auth
                                 .username()
-                                .unwrap_or_else(|| td_string!(i18n.get_locale(), account_webauthn.default_username).to_string())}
+                                .unwrap_or_else(|| td_string!(locale_now.get(), account_webauthn.default_username).to_string())}
                         </strong>
                     </p>
 
@@ -252,10 +253,10 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                 match credentials_res.get() {
                                     None => view! { <p>{t!(i18n, account_webauthn.loading_passkeys)}</p> }.into_any(),
                                     Some(Err(e)) => {
-                                        let detail = localize_webauthn_error(i18n.get_locale(), &e.to_string());
+                                        let detail = localize_webauthn_error(locale_now.get(), &e.to_string());
                                         view! {
                                             <p style="color: red;">
-                                                {format!("{}: {detail}", td_string!(i18n.get_locale(), account_webauthn.err_failed_load_passkeys_prefix))}
+                                                {format!("{}: {detail}", td_string!(locale_now.get(), account_webauthn.err_failed_load_passkeys_prefix))}
                                             </p>
                                         }.into_any()
                                     }
@@ -277,7 +278,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                                                 id="passkey_name"
                                                                 type="text"
                                                                 bind:value=draft_name
-                                                                placeholder=move || td_string!(i18n.get_locale(), account_webauthn.passkey_name_placeholder).to_string()
+                                                                placeholder=move || td_string!(locale_now.get(), account_webauthn.passkey_name_placeholder).to_string()
                                                                 disabled=move || pending_register.get() || pending_delete_id.get().is_some()
                                                             />
                                                         </td>
@@ -285,7 +286,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                                         <td>
                                                             {move || {
                                                                 if pending_register.get() {
-                                                                    td_string!(i18n.get_locale(), account_webauthn.registering).to_string()
+                                                                    td_string!(locale_now.get(), account_webauthn.registering).to_string()
                                                                 } else {
                                                                     "ready".to_string()
                                                                 }
@@ -326,7 +327,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                                                 id="passkey_name"
                                                                 type="text"
                                                                 bind:value=draft_name
-                                                                placeholder=move || td_string!(i18n.get_locale(), account_webauthn.passkey_name_placeholder).to_string()
+                                                                placeholder=move || td_string!(locale_now.get(), account_webauthn.passkey_name_placeholder).to_string()
                                                                 disabled=move || pending_register.get() || pending_delete_id.get().is_some()
                                                             />
                                                         </td>
@@ -334,7 +335,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                                         <td>
                                                             {move || {
                                                                 if pending_register.get() {
-                                                                    td_string!(i18n.get_locale(), account_webauthn.registering).to_string()
+                                                                    td_string!(locale_now.get(), account_webauthn.registering).to_string()
                                                                 } else {
                                                                     "ready".to_string()
                                                                 }
@@ -363,14 +364,14 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                                                                     <td>
                                                                         {format!(
                                                                             "{} {}",
-                                                                            td_string!(i18n.get_locale(), account_webauthn.created_at_prefix),
+                                                                            td_string!(locale_now.get(), account_webauthn.created_at_prefix),
                                                                             cred_created
                                                                         )}
                                                                     </td>
                                                                     <td>
                                                                         {move || {
                                                                             if pending_delete_id.get() == Some(cred_id) {
-                                                                                td_string!(i18n.get_locale(), account_webauthn.loading_passkeys).to_string()
+                                                                                td_string!(locale_now.get(), account_webauthn.loading_passkeys).to_string()
                                                                             } else {
                                                                                 "ready".to_string()
                                                                             }
@@ -405,7 +406,7 @@ pub fn AccountWebauthnPage() -> impl IntoView {
                     </Show>
 
                     <p style="margin-top: 1rem;">
-                        <A href=move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.account_path))>
+                        <A href=move || localized_path(locale_now.get(), td_string!(locale_now.get(), routes.account_path))>
                             {t!(i18n, account_webauthn.back_to_account)}
                         </A>
                     </p>

@@ -204,7 +204,7 @@ pub fn LoginPage() -> impl IntoView {
     let localize_error = {
         let i18n = i18n.clone();
         move |raw: String| -> String {
-            let locale = i18n.get_locale();
+            let locale = i18n.get_locale_untracked();
             match normalize_login_error_key(&raw) {
                 "err_invalid_credentials" => {
                     td_string!(locale, login.error_invalid_credentials).to_string()

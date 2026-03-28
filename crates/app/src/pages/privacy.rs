@@ -6,7 +6,8 @@ use leptos_meta::Title;
 #[component]
 pub fn Privacy() -> impl IntoView {
     let i18n = use_i18n();
-    let privacy_title = move || td_string!(i18n.get_locale(), privacy.title).to_string();
+    let locale_now = Signal::derive(move || i18n.get_locale());
+    let privacy_title = move || td_string!(locale_now.get(), privacy.title).to_string();
 
     view! {
         <Title text=privacy_title />

@@ -5,7 +5,8 @@ use leptos_meta::Title;
 #[component]
 pub fn Home() -> impl IntoView {
     let i18n = use_i18n();
-    let home_title = move || td_string!(i18n.get_locale(), home.title).to_string();
+    let locale_now = Signal::derive(move || i18n.get_locale());
+    let home_title = move || td_string!(locale_now.get(), home.title).to_string();
 
     view! {
         <Title text=home_title />

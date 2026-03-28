@@ -6,7 +6,8 @@ use leptos_meta::Title;
 #[component]
 pub fn Imprint() -> impl IntoView {
     let i18n = use_i18n();
-    let imprint_title = move || td_string!(i18n.get_locale(), imprint.title).to_string();
+    let locale_now = Signal::derive(move || i18n.get_locale());
+    let imprint_title = move || td_string!(locale_now.get(), imprint.title).to_string();
 
     view! {
         <Title text=imprint_title />

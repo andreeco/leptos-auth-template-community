@@ -12,6 +12,7 @@ use leptos_router::components::A;
 pub fn AccountProfilePage() -> impl IntoView {
     let i18n = use_i18n();
     let auth = expect_context::<AuthState>();
+    let locale_now = Signal::derive(move || i18n.get_locale());
 
     let csrf_sig = use_context::<CsrfContext>()
         .map(|c| c.0)
@@ -19,12 +20,16 @@ pub fn AccountProfilePage() -> impl IntoView {
     let csrf_ready = move || csrf_sig.read().is_some();
     let csrf_refresh = use_context::<RwSignal<()>>().unwrap_or_else(|| RwSignal::new(()));
 
-    let href_login =
-        move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path));
+    let href_login = move || {
+        localized_path(
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.login_path),
+        )
+    };
     let href_account = move || {
         localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.account_path),
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.account_path),
         )
     };
 
@@ -41,26 +46,27 @@ pub fn AccountProfilePage() -> impl IntoView {
     let map_server_error = {
         let i18n = i18n.clone();
         move |raw: String| -> String {
+            let locale = i18n.get_locale_untracked();
             match raw.as_str() {
                 "err_missing_csrf" => {
-                    td_string!(i18n.get_locale(), account.error_missing_csrf).to_string()
+                    td_string!(locale, account.error_missing_csrf).to_string()
                 }
                 "err_user_not_found" => {
-                    td_string!(i18n.get_locale(), account.error_user_not_found).to_string()
+                    td_string!(locale, account.error_user_not_found).to_string()
                 }
                 "err_not_authenticated" => {
-                    td_string!(i18n.get_locale(), account.error_not_authenticated).to_string()
+                    td_string!(locale, account.error_not_authenticated).to_string()
                 }
-                "err_forbidden" => td_string!(i18n.get_locale(), account.error_forbidden).to_string(),
-                "err_session_error" => td_string!(i18n.get_locale(), account.error_session).to_string(),
+                "err_forbidden" => td_string!(locale, account.error_forbidden).to_string(),
+                "err_session_error" => td_string!(locale, account.error_session).to_string(),
                 "err_invalid_email" => {
-                    td_string!(i18n.get_locale(), account.error_invalid_email).to_string()
+                    td_string!(locale, account.error_invalid_email).to_string()
                 }
-                "err_email_taken" => td_string!(i18n.get_locale(), account.error_email_taken).to_string(),
+                "err_email_taken" => td_string!(locale, account.error_email_taken).to_string(),
                 "err_username_exists" => {
-                    td_string!(i18n.get_locale(), account.error_username_exists).to_string()
+                    td_string!(locale, account.error_username_exists).to_string()
                 }
-                _ => td_string!(i18n.get_locale(), account.error_unknown).to_string(),
+                _ => td_string!(locale, account.error_unknown).to_string(),
             }
         }
     };
@@ -111,8 +117,9 @@ pub fn AccountProfilePage() -> impl IntoView {
             }
 
             let Some(csrf) = csrf_sig.get_untracked() else {
+                let locale = i18n.get_locale_untracked();
                 error.set(Some(
-                    td_string!(i18n.get_locale(), account.error_missing_csrf).to_string(),
+                    td_string!(locale, account.error_missing_csrf).to_string(),
                 ));
                 success.set(None);
                 return;
@@ -134,8 +141,9 @@ pub fn AccountProfilePage() -> impl IntoView {
                         last_name.set(updated.last_name);
                         email.set(updated.email);
 
+                        let locale = i18n.get_locale_untracked();
                         success.set(Some(
-                            td_string!(i18n.get_locale(), account.success_profile_updated).to_string(),
+                            td_string!(locale, account.success_profile_updated).to_string(),
                         ));
                         error.set(None);
                         loaded.set(true);
@@ -187,7 +195,7 @@ pub fn AccountProfilePage() -> impl IntoView {
                         <strong>
                             {move || auth
                                 .username()
-                                .unwrap_or_else(|| td_string!(i18n.get_locale(), account.fallback_username).to_string())}
+                                .unwrap_or_else(|| td_string!(locale_now.get(), account.fallback_username).to_string())}
                         </strong>
                     </p>
 
@@ -245,9 +253,9 @@ pub fn AccountProfilePage() -> impl IntoView {
                                 <button type="submit" disabled=move || !csrf_ready() || pending.get()>
                                     {move || {
                                         if pending.get() {
-                                            td_string!(i18n.get_locale(), account.submit_saving_profile).to_string()
+                                            td_string!(locale_now.get(), account.submit_saving_profile).to_string()
                                         } else {
-                                            td_string!(i18n.get_locale(), account.profile_save).to_string()
+                                            td_string!(locale_now.get(), account.profile_save).to_string()
                                         }
                                     }}
                                 </button>

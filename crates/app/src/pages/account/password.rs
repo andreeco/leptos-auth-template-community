@@ -12,6 +12,7 @@ use leptos_router::components::A;
 pub fn AccountPasswordPage() -> impl IntoView {
     let i18n = use_i18n();
     let auth = expect_context::<AuthState>();
+    let locale_now = Signal::derive(move || i18n.get_locale());
 
     let current_password = RwSignal::new(String::new());
     let new_password = RwSignal::new(String::new());
@@ -28,41 +29,49 @@ pub fn AccountPasswordPage() -> impl IntoView {
 
     let csrf_refresh = use_context::<RwSignal<()>>().unwrap_or_else(|| RwSignal::new(()));
 
-    let href_login =
-        move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path));
-    let href_account =
-        move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.account_path));
+    let href_login = move || {
+        localized_path(
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.login_path),
+        )
+    };
+    let href_account = move || {
+        localized_path(
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.account_path),
+        )
+    };
 
     let map_server_error = {
         let i18n = i18n.clone();
         move |raw: String| -> String {
+            let locale = i18n.get_locale_untracked();
             match raw.as_str() {
                 "err_missing_csrf" => {
-                    td_string!(i18n.get_locale(), account.error_missing_csrf).to_string()
+                    td_string!(locale, account.error_missing_csrf).to_string()
                 }
                 "err_password_mismatch" => {
-                    td_string!(i18n.get_locale(), account.error_password_mismatch).to_string()
+                    td_string!(locale, account.error_password_mismatch).to_string()
                 }
                 "err_password_too_short" => {
-                    td_string!(i18n.get_locale(), account.error_password_too_short).to_string()
+                    td_string!(locale, account.error_password_too_short).to_string()
                 }
                 "err_current_password_incorrect" => {
-                    td_string!(i18n.get_locale(), account.error_current_password_incorrect)
-                        .to_string()
+                    td_string!(locale, account.error_current_password_incorrect).to_string()
                 }
                 "err_user_not_found" => {
-                    td_string!(i18n.get_locale(), account.error_user_not_found).to_string()
+                    td_string!(locale, account.error_user_not_found).to_string()
                 }
                 "err_not_authenticated" => {
-                    td_string!(i18n.get_locale(), account.error_not_authenticated).to_string()
+                    td_string!(locale, account.error_not_authenticated).to_string()
                 }
                 "err_forbidden" => {
-                    td_string!(i18n.get_locale(), account.error_forbidden).to_string()
+                    td_string!(locale, account.error_forbidden).to_string()
                 }
                 "err_session_error" => {
-                    td_string!(i18n.get_locale(), account.error_session).to_string()
+                    td_string!(locale, account.error_session).to_string()
                 }
-                _ => td_string!(i18n.get_locale(), account.error_unknown).to_string(),
+                _ => td_string!(locale, account.error_unknown).to_string(),
             }
         }
     };
@@ -80,8 +89,9 @@ pub fn AccountPasswordPage() -> impl IntoView {
             let csrf = match csrf_sig.get_untracked() {
                 Some(token) => token,
                 None => {
+                    let locale = i18n.get_locale_untracked();
                     error.set(Some(
-                        td_string!(i18n.get_locale(), account.error_missing_csrf).to_string(),
+                        td_string!(locale, account.error_missing_csrf).to_string(),
                     ));
                     success.set(None);
                     return;
@@ -93,16 +103,18 @@ pub fn AccountPasswordPage() -> impl IntoView {
             let confirm = confirm_password.get_untracked();
 
             if new_pw != confirm {
+                let locale = i18n.get_locale_untracked();
                 error.set(Some(
-                    td_string!(i18n.get_locale(), account.error_password_mismatch).to_string(),
+                    td_string!(locale, account.error_password_mismatch).to_string(),
                 ));
                 success.set(None);
                 return;
             }
 
             if new_pw.len() < 10 {
+                let locale = i18n.get_locale_untracked();
                 error.set(Some(
-                    td_string!(i18n.get_locale(), account.error_password_too_short).to_string(),
+                    td_string!(locale, account.error_password_too_short).to_string(),
                 ));
                 success.set(None);
                 return;
@@ -118,9 +130,9 @@ pub fn AccountPasswordPage() -> impl IntoView {
                         current_password.set(String::new());
                         new_password.set(String::new());
                         confirm_password.set(String::new());
+                        let locale = i18n.get_locale_untracked();
                         success.set(Some(
-                            td_string!(i18n.get_locale(), account.success_password_updated)
-                                .to_string(),
+                            td_string!(locale, account.success_password_updated).to_string(),
                         ));
                         error.set(None);
 
@@ -167,7 +179,7 @@ pub fn AccountPasswordPage() -> impl IntoView {
                     <p>
                         {t!(i18n, account.signed_in_as)}
                         " "
-                        <strong>{move || auth.username().unwrap_or_else(|| td_string!(i18n.get_locale(), account.fallback_username).to_string())}</strong>
+                        <strong>{move || auth.username().unwrap_or_else(|| td_string!(locale_now.get(), account.fallback_username).to_string())}</strong>
                     </p>
 
                     <h2>{t!(i18n, account.security)}</h2>
@@ -215,9 +227,9 @@ pub fn AccountPasswordPage() -> impl IntoView {
                                 disabled=move || !csrf_ready() || pending.get()
                             >
                                 {move || if pending.get() {
-                                    td_string!(i18n.get_locale(), account.submit_updating).to_string()
+                                    td_string!(locale_now.get(), account.submit_updating).to_string()
                                 } else {
-                                    td_string!(i18n.get_locale(), account.submit_change_password).to_string()
+                                    td_string!(locale_now.get(), account.submit_change_password).to_string()
                                 }}
                             </button>
                         </div>

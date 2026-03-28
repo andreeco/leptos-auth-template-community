@@ -20,7 +20,7 @@ pub fn AdminPage() -> impl IntoView {
     let render_flash = Callback::new({
         let i18n = i18n.clone();
         move |raw: String| -> String {
-            let locale = i18n.get_locale();
+            let locale = i18n.get_locale_untracked();
             match raw.as_str() {
                 // success/info
                 "msg_missing_csrf" => td_string!(locale, admin.msg_missing_csrf).to_string(),

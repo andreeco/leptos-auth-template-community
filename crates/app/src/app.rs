@@ -56,17 +56,16 @@ fn GuardCheckingAdminAccessFallback() -> impl IntoView {
 #[component]
 fn AppRoutes(auth: AuthState) -> impl IntoView {
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
+
     let login_redirect_path = Signal::derive(move || {
-        localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.login_path),
-        )
+        let locale = locale_now.get();
+        localized_path(locale, td_string!(locale, routes.login_path))
     });
+
     let account_password_redirect_path = Signal::derive(move || {
-        localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.account_password_path),
-        )
+        let locale = locale_now.get();
+        localized_path(locale, td_string!(locale, routes.account_password_path))
     });
     let protected_redirect_path = Signal::derive(move || {
         if auth.ready.get() && auth.logged_in() && auth.requires_password_reset() {

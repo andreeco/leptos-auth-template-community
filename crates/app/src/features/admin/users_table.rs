@@ -49,6 +49,7 @@ pub fn UsersTable(
     on_changed: Callback<()>,
 ) -> impl IntoView {
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
 
     // Draft card (create user)
     let draft_pending = RwSignal::new(false);
@@ -384,8 +385,8 @@ pub fn UsersTable(
                 <label for="admin_user_search">
                     {move || format!(
                         "{} / {}",
-                        td_string!(i18n.get_locale(), admin.username),
-                        td_string!(i18n.get_locale(), admin.email)
+                        td_string!(locale_now.get(), admin.username),
+                        td_string!(locale_now.get(), admin.email)
                     )}
                 </label>
                 <div style="display:flex; gap:0.5rem; align-items:center; justify-content:center;">
@@ -398,8 +399,8 @@ pub fn UsersTable(
                         bind:value=search_query
                         placeholder=move || format!(
                             "{} / {}",
-                            td_string!(i18n.get_locale(), admin.username),
-                            td_string!(i18n.get_locale(), admin.email)
+                            td_string!(locale_now.get(), admin.username),
+                            td_string!(locale_now.get(), admin.email)
                         )
                     />
                     <button
@@ -415,7 +416,7 @@ pub fn UsersTable(
                 </div>
                 <Show when=move || search_query.with(|q| q.trim().chars().count() < 2)>
                     <small style="color:#666; text-align:center; display:block;">
-                        {move || td_string!(i18n.get_locale(), admin.search_min_chars_hint).to_string()}
+                        {move || td_string!(locale_now.get(), admin.search_min_chars_hint).to_string()}
                     </small>
                 </Show>
             </form>
@@ -481,7 +482,7 @@ pub fn UsersTable(
                                 }
                             >
                                 <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; margin-bottom:0.6rem;">
-                                    <strong>{format!("{} {}", td_string!(i18n.get_locale(), admin.id), row_id)}</strong>
+                                    <strong>{move || format!("{} {}", td_string!(locale_now.get(), admin.id), row_id)}</strong>
                                     <div style="display:flex; gap:0.5rem; align-items:center;">
                                         <button
                                             type="button"
@@ -571,7 +572,7 @@ pub fn UsersTable(
                                                     m.insert(row_id, v);
                                                 });
                                             }
-                                            placeholder=move || td_string!(i18n.get_locale(), admin.password).to_string()
+                                            placeholder=move || td_string!(locale_now.get(), admin.password).to_string()
                                             disabled=move || is_pending_row(row_id) || !csrf_ready()
                                         />
                                     </div>
@@ -675,9 +676,9 @@ pub fn UsersTable(
                                     <small style="color:#666;">
                                         {move || format!(
                                             "{}: {} | {}: {}",
-                                            td_string!(i18n.get_locale(), admin.created_at),
+                                            td_string!(locale_now.get(), admin.created_at),
                                             row_sig_created.with(|r| r.created_at.clone()),
-                                            td_string!(i18n.get_locale(), admin.updated_at),
+                                            td_string!(locale_now.get(), admin.updated_at),
                                             row_sig_updated.with(|r| r.updated_at.clone())
                                         )}
                                     </small>
@@ -694,8 +695,8 @@ pub fn UsersTable(
                 <p style="color:#666; margin-top:0.75rem; margin-bottom:0.75rem;">
                     {move || format!(
                         "{} — {}",
-                        td_string!(i18n.get_locale(), admin.msg_no_user_selected),
-                        td_string!(i18n.get_locale(), admin.create_user)
+                        td_string!(locale_now.get(), admin.msg_no_user_selected),
+                        td_string!(locale_now.get(), admin.create_user)
                     )}
                 </p>
             </Show>

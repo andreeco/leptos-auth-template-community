@@ -13,25 +13,30 @@ use leptos_router::components::A;
 pub fn AccountPage() -> impl IntoView {
     let i18n = use_i18n();
     let auth = expect_context::<AuthState>();
+    let locale_now = Signal::derive(move || i18n.get_locale());
 
-    let href_login =
-        move || localized_path(i18n.get_locale(), td_string!(i18n.get_locale(), routes.login_path));
+    let href_login = move || {
+        localized_path(
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.login_path),
+        )
+    };
     let href_profile = move || {
         localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.account_profile_path),
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.account_profile_path),
         )
     };
     let href_password = move || {
         localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.account_password_path),
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.account_password_path),
         )
     };
     let href_webauthn = move || {
         localized_path(
-            i18n.get_locale(),
-            td_string!(i18n.get_locale(), routes.account_webauthn_path),
+            locale_now.get(),
+            td_string!(locale_now.get(), routes.account_webauthn_path),
         )
     };
 
