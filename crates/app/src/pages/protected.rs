@@ -20,6 +20,7 @@ pub async fn add_two(a: i32, b: i32) -> Result<i32, ServerFnError> {
 #[component]
 pub fn Protected() -> impl IntoView {
     let i18n = use_i18n();
+    let locale_now = Signal::derive(move || i18n.get_locale());
     let auth = expect_context::<AuthState>();
     let sum = RwSignal::new(None);
     let error = RwSignal::new(None);
@@ -45,7 +46,9 @@ pub fn Protected() -> impl IntoView {
         <h1>{t!(i18n, protected.title)}</h1>
         <p>
             {t!(i18n, protected.login_as)}
-            {move || auth.username().unwrap_or_else(|| td_string!(i18n.get_locale(), protected.not_authenticated).to_string())}
+            {move || auth.username().unwrap_or_else(|| {
+                td_string!(locale_now.get(), protected.not_authenticated).to_string()
+            })}
         </p>
         <button on:click=compute>{t!(i18n, protected.button)}</button>
         <Show when=move || sum.get().is_some()>
@@ -59,7 +62,7 @@ pub fn Protected() -> impl IntoView {
                     let raw = error.get().unwrap_or_default();
                     match raw.as_str() {
                         "err_not_authenticated" => {
-                            td_string!(i18n.get_locale(), protected.not_authenticated).to_string()
+                            td_string!(locale_now.get(), protected.not_authenticated).to_string()
                         }
                         _ => raw,
                     }
