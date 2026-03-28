@@ -177,77 +177,29 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
     }
 }
 
-struct ContactRoute;
+macro_rules! define_lazy_route {
+    ($name:ident, $component:ident) => {
+        struct $name;
 
-#[lazy_route]
-impl LazyRoute for ContactRoute {
-    fn data() -> Self {
-        Self
-    }
+        #[lazy_route]
+        impl LazyRoute for $name {
+            fn data() -> Self {
+                Self
+            }
 
-    fn view(this: Self) -> AnyView {
-        let _ = this;
-        view! { <Contact/> }.into_any()
-    }
+            fn view(this: Self) -> AnyView {
+                let _ = this;
+                view! { <$component/> }.into_any()
+            }
+        }
+    };
 }
 
-struct PrivacyRoute;
-
-#[lazy_route]
-impl LazyRoute for PrivacyRoute {
-    fn data() -> Self {
-        Self
-    }
-
-    fn view(this: Self) -> AnyView {
-        let _ = this;
-        view! { <Privacy/> }.into_any()
-    }
-}
-
-struct ImprintRoute;
-
-#[lazy_route]
-impl LazyRoute for ImprintRoute {
-    fn data() -> Self {
-        Self
-    }
-
-    fn view(this: Self) -> AnyView {
-        let _ = this;
-        view! { <Imprint/> }.into_any()
-    }
-}
-
-struct LoginRoute;
-
-#[lazy_route]
-impl LazyRoute for LoginRoute {
-    fn data() -> Self {
-        Self
-    }
-
-    fn view(this: Self) -> AnyView {
-        let _ = this;
-        view! { <LoginPage/> }.into_any()
-    }
-}
-
-struct LogoutRoute;
-
-#[lazy_route]
-impl LazyRoute for LogoutRoute {
-    fn data() -> Self {
-        Self
-    }
-
-    fn view(this: Self) -> AnyView {
-        let _ = this;
-        view! { <LogoutPage/> }.into_any()
-    }
-}
-
-
+define_lazy_route!(ContactRoute, Contact);
+define_lazy_route!(PrivacyRoute, Privacy);
+define_lazy_route!(ImprintRoute, Imprint);
+define_lazy_route!(LoginRoute, LoginPage);
+define_lazy_route!(LogoutRoute, LogoutPage);
 
 #[island]
 pub fn App() -> impl IntoView {
