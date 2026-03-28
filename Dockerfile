@@ -110,6 +110,7 @@ ENV DATABASE_URL="sqlite:///data/app.sqlite?mode=rwc" \
     LEPTOS_SITE_ROOT="site" \
     LEPTOS_SITE_ADDR="0.0.0.0:3000" \
     LEPTOS_ENV="production" \
+    APP_BASE_URL="https://example.com" \
     WEBAUTHN_RP_ORIGIN="http://localhost:3000" \
     WEBAUTHN_RP_ID="localhost" \
     WEBAUTHN_RP_NAME="example-app" \
