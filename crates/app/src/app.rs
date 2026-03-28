@@ -25,7 +25,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <AutoReload options=options.clone() />
-                <HydrationScripts options islands=true/>
+                <HydrationScripts options/>
                 <MetaTags/>
             </head>
             <body>
@@ -201,7 +201,7 @@ define_lazy_route!(ImprintRoute, Imprint);
 define_lazy_route!(LoginRoute, LoginPage);
 define_lazy_route!(LogoutRoute, LogoutPage);
 
-#[island]
+#[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
