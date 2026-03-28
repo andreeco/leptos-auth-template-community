@@ -20,5 +20,5 @@ pub use app::{shell, App};
 pub fn hydrate() {
     use app::*;
     console_error_panic_hook::set_once();
-    leptos::mount::hydrate_lazy(App);
+    leptos::mount::hydrate_islands();
 }

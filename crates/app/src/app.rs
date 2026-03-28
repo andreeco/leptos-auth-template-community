@@ -10,10 +10,7 @@ use crate::pages::{
 use leptos::prelude::*;
 use leptos_i18n_router::{i18n_path, I18nRoute};
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
-use leptos_router::{
-    components::*,
-    lazy_route, Lazy, LazyRoute,
-};
+use leptos_router::components::*;
 
 use std::collections::HashSet;
 
@@ -25,7 +22,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <AutoReload options=options.clone() />
-                <HydrationScripts options/>
+                <HydrationScripts options islands=true/>
                 <MetaTags/>
             </head>
             <body>
@@ -88,11 +85,11 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
                 <Footer />
             }>
                 <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.home_path)) view=Home/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.contact_path)) view={Lazy::<ContactRoute>::new()}/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.privacy_path)) view={Lazy::<PrivacyRoute>::new()}/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.imprint_path)) view={Lazy::<ImprintRoute>::new()}/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.login_path)) view={Lazy::<LoginRoute>::new()}/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.logout_path)) view={Lazy::<LogoutRoute>::new()}/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.contact_path)) view=Contact/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.privacy_path)) view=Privacy/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.imprint_path)) view=Imprint/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.login_path)) view=LoginPage/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.logout_path)) view=LogoutPage/>
                 <ProtectedRoute
                     path=i18n_path!(Locale, |locale| td_string!(locale, routes.protected_path))
                     view=Protected
@@ -176,31 +173,9 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
     }
 }
 
-macro_rules! define_lazy_route {
-    ($name:ident, $component:ident) => {
-        struct $name;
 
-        #[lazy_route]
-        impl LazyRoute for $name {
-            fn data() -> Self {
-                Self
-            }
 
-            fn view(this: Self) -> AnyView {
-                let _ = this;
-                view! { <$component/> }.into_any()
-            }
-        }
-    };
-}
-
-define_lazy_route!(ContactRoute, Contact);
-define_lazy_route!(PrivacyRoute, Privacy);
-define_lazy_route!(ImprintRoute, Imprint);
-define_lazy_route!(LoginRoute, LoginPage);
-define_lazy_route!(LogoutRoute, LogoutPage);
-
-#[component]
+#[island]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 

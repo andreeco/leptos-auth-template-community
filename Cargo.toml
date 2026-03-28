@@ -14,7 +14,7 @@ chrono = { version = "0.4" }
 console_error_panic_hook = { version = "0.1" }
 db = { path = "crates/db" }
 http = { version = "1.4" }
-leptos = { version = "0.8.0", features = ["nightly"] }
+leptos = { version = "0.8.0", features = ["nightly", "islands"] }
 leptos_axum = { version = "0.8.0" }
 leptos_i18n = { version = "0.6" }
 leptos_i18n_build = { version = "0.6", package = "leptos_i18n_build" }
