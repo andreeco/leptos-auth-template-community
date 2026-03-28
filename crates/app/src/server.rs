@@ -235,22 +235,24 @@ pub async fn run() {
     );
 
     // --- Routes ---
-    let public_api = Router::new().route(
-        "/api/{*fn_name}",
-        get(server_fn_handler).post(server_fn_handler),
-    );
-
-    let app = Router::new()
-        .merge(public_api)
+    let api = Router::new()
+        .route(
+            "/api/{*fn_name}",
+            get(server_fn_handler).post(server_fn_handler),
+        )
         .route(
             "/api/secure/{*fn_name}",
             get(server_fn_handler)
                 .post(server_fn_handler)
                 .route_layer(login_required!(Backend)),
         )
+        .layer(rate_limit_layer);
+
+    let app = Router::new()
+        .merge(api)
         .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .fallback(leptos_axum::file_and_error_handler::<AppState, _>(shell))
-        .layer(rate_limit_layer)
+
         .layer(body_limit_layer)
         .layer(nosniff)
         .layer(referrer_policy)
