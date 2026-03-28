@@ -54,7 +54,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cp /src/target/release/leptos-auth-template-community /out/bin/app; \
     cp /src/target/release/migration /out/bin/migration; \
     cp /src/target/release/seed_admin /out/bin/seed_admin; \
-    cp -R /src/target/site/. /out/site/
+    cp -R /src/target/site/. /out/site/; \
+    cp -R /src/crates/app/public/. /out/site/
 
 ############################
 # Runtime stage

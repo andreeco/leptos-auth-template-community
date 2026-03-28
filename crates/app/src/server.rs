@@ -60,7 +60,7 @@ fn csp_value(env: AppEnv) -> &'static str {
              frame-ancestors 'none'; \
              img-src 'self' data:; \
              style-src 'self' 'unsafe-inline'; \
-             script-src 'self'; \
+             script-src 'self' 'unsafe-inline'; \
              connect-src 'self';"
         }
         _ => {

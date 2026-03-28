@@ -1,3 +1,5 @@
+#![recursion_limit = "1024"]
+
 include!(concat!(env!("OUT_DIR"), "/i18n/mod.rs"));
 pub use i18n::*;
 pub mod app;
