@@ -4,7 +4,7 @@
 
 Work-in-progress **login template** for:
 
-- **Leptos** (SSR + hydration)
+- **Leptos** (SSR + lazy hydration + lazy route code-splitting)
 - **Axum**
 - **axum-login** + **tower-sessions**
 - **SeaORM** (SQLite)
@@ -64,10 +64,16 @@ Seed admin user (idempotent):
 SEED_ALLOW_ADMIN=1 cargo run --features ssr --bin seed_admin
 ~~~
 
-Run app:
+Run app (lazy routes enabled):
 
 ~~~bash
-cargo leptos watch
+cargo leptos watch --split
+~~~
+
+Release build:
+
+~~~bash
+cargo leptos build --release --split
 ~~~
 
 Open:
@@ -96,6 +102,7 @@ SEED_ALLOW_ADMIN=1 cargo run --features ssr --bin seed_admin
 ## Notes
 
 - This is a focused template, not a complete production auth platform.
+- Lazy routes are enabled; use `cargo leptos watch --split` in development and `cargo leptos build --release --split` for production builds.
 - Current session store is in-memory for simplicity and should not be used for production deployments.
 - For production, use a persistent session backend, HTTPS-only deployment, hardened cookie/security settings, and full operational monitoring.
 - Login throttling is intentionally basic in this template; consider per-account and per-IP lockout/rate-limiting policies for stronger protection.
