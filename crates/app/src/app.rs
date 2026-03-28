@@ -10,8 +10,10 @@ use crate::pages::{
 use leptos::prelude::*;
 use leptos_i18n_router::{i18n_path, I18nRoute};
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
-use leptos_router::components::*;
-
+use leptos_router::{
+    components::*,
+    lazy_route, Lazy, LazyRoute,
+};
 
 use std::collections::HashSet;
 
@@ -87,11 +89,11 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
                 <Footer />
             }>
                 <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.home_path)) view=Home/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.contact_path)) view=Contact/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.privacy_path)) view=Privacy/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.imprint_path)) view=Imprint/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.login_path)) view=LoginPage/>
-                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.logout_path)) view=LogoutPage/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.contact_path)) view={Lazy::<ContactRoute>::new()}/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.privacy_path)) view={Lazy::<PrivacyRoute>::new()}/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.imprint_path)) view={Lazy::<ImprintRoute>::new()}/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.login_path)) view={Lazy::<LoginRoute>::new()}/>
+                <Route path=i18n_path!(Locale, |locale| td_string!(locale, routes.logout_path)) view={Lazy::<LogoutRoute>::new()}/>
                 <ProtectedRoute
                     path=i18n_path!(Locale, |locale| td_string!(locale, routes.protected_path))
                     view=Protected
@@ -174,6 +176,78 @@ fn AppRoutes(auth: AuthState) -> impl IntoView {
         </Routes>
     }
 }
+
+struct ContactRoute;
+
+#[lazy_route]
+impl LazyRoute for ContactRoute {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(this: Self) -> AnyView {
+        let _ = this;
+        view! { <Contact/> }.into_any()
+    }
+}
+
+struct PrivacyRoute;
+
+#[lazy_route]
+impl LazyRoute for PrivacyRoute {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(this: Self) -> AnyView {
+        let _ = this;
+        view! { <Privacy/> }.into_any()
+    }
+}
+
+struct ImprintRoute;
+
+#[lazy_route]
+impl LazyRoute for ImprintRoute {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(this: Self) -> AnyView {
+        let _ = this;
+        view! { <Imprint/> }.into_any()
+    }
+}
+
+struct LoginRoute;
+
+#[lazy_route]
+impl LazyRoute for LoginRoute {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(this: Self) -> AnyView {
+        let _ = this;
+        view! { <LoginPage/> }.into_any()
+    }
+}
+
+struct LogoutRoute;
+
+#[lazy_route]
+impl LazyRoute for LogoutRoute {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(this: Self) -> AnyView {
+        let _ = this;
+        view! { <LogoutPage/> }.into_any()
+    }
+}
+
+
 
 #[island]
 pub fn App() -> impl IntoView {
