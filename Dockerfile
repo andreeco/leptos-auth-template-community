@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     --mount=type=cache,target=/src/target \
     set -eux; \
-    cargo leptos build --release --split; \
+    cargo leptos build --release; \
     cargo build -p migration --release --locked; \
     cargo build -p leptos-auth-template-community \
       --bin seed_admin \
