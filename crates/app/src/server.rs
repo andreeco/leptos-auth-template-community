@@ -1,6 +1,6 @@
 use axum::{
     extract::{Request, State},
-    response::IntoResponse,
+    response::{IntoResponse, Redirect},
     routing::get,
     Extension, Router,
 };
@@ -60,7 +60,7 @@ fn csp_value(env: AppEnv) -> &'static str {
              frame-ancestors 'none'; \
              img-src 'self' data:; \
              style-src 'self' 'unsafe-inline'; \
-             script-src 'self' 'unsafe-inline'; \
+             script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; \
              connect-src 'self';"
         }
         _ => {
@@ -250,6 +250,7 @@ pub async fn run() {
 
     let app = Router::new()
         .merge(api)
+        .route("/en/", get(|| async { Redirect::permanent("/en") }))
         .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .fallback(leptos_axum::file_and_error_handler::<AppState, _>(shell))
 
