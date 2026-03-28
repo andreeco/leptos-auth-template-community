@@ -4,7 +4,7 @@ This document describes the current **template architecture** and SeaORM wiring 
 
 Template focus:
 
-- Leptos + Axum SSR/hydration
+- Leptos + Axum SSR + islands hydration
 - `axum-login` session auth
 - SeaORM-backed auth data model
 - WebAuthn/passkeys for account security
