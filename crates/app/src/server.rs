@@ -60,14 +60,14 @@ fn csp_value(env: AppEnv) -> &'static str {
              frame-ancestors 'none'; \
              img-src 'self' data:; \
              style-src 'self' 'unsafe-inline'; \
-             script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; \
+             script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; \
              connect-src 'self';"
         }
         _ => {
             "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; \
              img-src 'self' data: blob:; \
              style-src 'self' 'unsafe-inline'; \
-             script-src 'self' 'unsafe-inline' 'unsafe-eval'; \
+             script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; \
              connect-src 'self' ws: wss:;"
         }
     }
